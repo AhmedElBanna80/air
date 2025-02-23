@@ -1,12 +1,8 @@
-import { Button } from "@workspace/ui/components/button"
-
-export default function Page() {
+export default function Home() {
   return (
-    <div className="flex items-center justify-center min-h-svh">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-bold">Hello World</h1>
-        <Button size="sm">Button</Button>
-      </div>
-    </div>
-  )
+    <main className="flex-1 overflow-y-auto p-6">
+      {/* Main content will go here */}
+      <h1 className="text-2xl font-bold">Air Quality Analysis Dashboard</h1>
+    </main>
+  );
 }
