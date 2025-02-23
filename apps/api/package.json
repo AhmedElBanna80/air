@@ -1,0 +1,25 @@
+{
+  "name": "api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsx build src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint . --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.8.2",
+    "hono": "^4.1.0",
+    "@workspace/typescript-config": "workspace:*",
+    "@workspace/eslint-config": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.7.1",
+    "typescript": "^5",
+    "eslint": "^9.0.0"
+  }
+}

@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg17
+    container_name: timescaledb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "myuser"
+      POSTGRES_PASSWORD: "mysecretpassword"
+      POSTGRES_DB: "airqualitydb"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - timescaledb-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    ports:
+      - "4566:4566" # Edge port for all services
+      - "4571:4571" # Optional: additional service port if needed
+    environment:
+      - SERVICES=s3,sns
+      - PERSISTENCE=1
+    volumes:
+      - ./localstack:/var/localstack
+    restart: unless-stopped
+
+volumes:
+  timescaledb-data:
+    driver: local
