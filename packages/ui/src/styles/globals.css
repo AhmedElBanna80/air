@@ -66,3 +66,23 @@
     @apply bg-background text-foreground;
   }
 }
+body.sidebar-open {
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  body.sidebar-open {
+    overflow: auto;
+  }
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
