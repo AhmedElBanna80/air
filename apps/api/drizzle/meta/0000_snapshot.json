@@ -1,0 +1,145 @@
+{
+  "id": "8f128489-ecc5-43cf-87d6-a261191186fa",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "air_quality_measurements": {
+      "name": "air_quality_measurements",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "co_gt": {
+          "name": "co_gt",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "co_s1": {
+          "name": "co_s1",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nmhc_gt": {
+          "name": "nmhc_gt",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nmhc_s2": {
+          "name": "nmhc_s2",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "benzene_gt": {
+          "name": "benzene_gt",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nox_gt": {
+          "name": "nox_gt",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nox_s3": {
+          "name": "nox_s3",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no2_gt": {
+          "name": "no2_gt",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no2_s4": {
+          "name": "no2_s4",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "o3_s5": {
+          "name": "o3_s5",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "temperature": {
+          "name": "temperature",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relative_humidity": {
+          "name": "relative_humidity",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "absolute_humidity": {
+          "name": "absolute_humidity",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "timestamp_idx": {
+          "name": "timestamp_idx",
+          "columns": [
+            "timestamp"
+          ],
+          "isUnique": false
+        },
+        "temperature_idx": {
+          "name": "temperature_idx",
+          "columns": [
+            "temperature"
+          ],
+          "isUnique": false
+        },
+        "humidity_idx": {
+          "name": "humidity_idx",
+          "columns": [
+            "relative_humidity"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "air_quality_measurements_timestamp_unique": {
+          "name": "air_quality_measurements_timestamp_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "timestamp"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}
