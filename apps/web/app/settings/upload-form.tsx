@@ -1,15 +1,16 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Upload } from "lucide-react";
+import { uploadAirQualityData } from "../../lib/api-client.js";
 
 export function UploadForm() {
     const [file, setFile] = useState<File | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = event.target.files?.[0];
@@ -28,12 +29,18 @@ export function UploadForm() {
             return;
         }
 
-        // TODO: Implement file upload logic here
-        console.log("Uploading file:", file.name);
-
-        // Reset the form after upload
-        setFile(null);
-        event.currentTarget.reset();
+        try {
+            setUploading(true);
+            await uploadAirQualityData(file);
+            alert("Upload started successfully!");
+        } catch (error) {
+            console.error("Upload failed:", error);
+            alert("Failed to upload file. Please try again.");
+        } finally {
+            setUploading(false);
+            setFile(null);
+            event.currentTarget.reset();
+        }
     };
 
     return (
@@ -46,10 +53,12 @@ export function UploadForm() {
                     accept=".csv"
                     onChange={handleFileChange}
                     className="cursor-pointer"
+                    disabled={uploading}
                 />
             </div>
-            <Button type="submit" disabled={!file}>
-                <Upload className="mr-2 h-4 w-4" /> Upload CSV
+            <Button type="submit" disabled={!file || uploading}>
+                <Upload className="mr-2 h-4 w-4" />
+                {uploading ? "Uploading..." : "Upload CSV"}
             </Button>
         </form>
     );
