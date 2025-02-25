@@ -1,15 +1,18 @@
-import { BatchTransform } from './../lib/batch-transform.ts';
-import { Readable, Transform } from "node:stream";
-import { ReadableStream } from "node:stream/web";
+import type { PinoLogger } from "hono-pino";
+import type { ReadableStream } from "node:stream/web";
+
 import * as csv from "fast-csv";
+import { Readable, Transform } from "node:stream";
 import { z } from "zod";
-import { PinoLogger } from "hono-pino";
-import { type TypedReadable } from '../lib/types.ts';
+
+import type { TypedReadable } from "../lib/types.ts";
+
+import { BatchTransform } from "./../lib/batch-transform.ts";
 
 // Define input and output schemas
 const inputSchema = z.object({
-  Date: z.string(),
-  Time: z.string(),
+  "Date": z.string(),
+  "Time": z.string(),
   "CO(GT)": z.string(),
   "PT08.S1(CO)": z.string(),
   "NMHC(GT)": z.string(),
@@ -20,15 +23,22 @@ const inputSchema = z.object({
   "NO2(GT)": z.string(),
   "PT08.S4(NO2)": z.string(),
   "PT08.S5(O3)": z.string(),
-  T: z.string(),
-  RH: z.string(),
-  AH: z.string(),
+  "T": z.string(),
+  "RH": z.string(),
+  "AH": z.string(),
 });
 
 const outputSchema = inputSchema.transform((row) => {
   const [day, month, year] = row.Date.split("/").map(Number);
   const [hour, minute, second] = row.Time.split(".").map(Number);
-  const timestamp = new Date(Number(year), Number(month) - 1, day, hour, minute, second);
+  const timestamp = new Date(
+    Number(year),
+    Number(month) - 1,
+    day,
+    hour,
+    minute,
+    second,
+  );
   const parseNumber = (s: string) => Number(s.replace(",", "."));
   return {
     timestamp,
@@ -51,12 +61,14 @@ const outputSchema = inputSchema.transform((row) => {
 export type InputType = z.infer<typeof inputSchema>;
 export type OutputType = z.infer<typeof outputSchema>;
 
-
 export class CsvParserService {
   constructor(private readonly logger: PinoLogger) {}
 
   // Here we explicitly annotate that the stream emits batches (arrays) of OutputType.
-  parseAirQualityData(file: File, batchSize: number = 1000): TypedReadable<OutputType[]> {
+  parseAirQualityData(
+    file: File,
+    batchSize: number = 1000,
+  ): TypedReadable<OutputType[]> {
     const webStream: ReadableStream = file.stream() as ReadableStream;
     const nodeStream = Readable.fromWeb(webStream);
 
@@ -71,12 +83,13 @@ export class CsvParserService {
           headers: true,
           ignoreEmpty: true,
           trim: true,
-        })
+        }),
       )
       .transform((row: InputType) => {
         try {
           return outputSchema.parse(row);
-        } catch (error) {
+        }
+        catch (error) {
           this.logger.error({ error, row }, "Error parsing row");
           // Skip invalid rows by returning null
           return null;
@@ -88,12 +101,15 @@ export class CsvParserService {
           transform(chunk: OutputType | null, _encoding, callback) {
             if (chunk !== null) {
               callback(null, chunk);
-            } else {
+            }
+            else {
               callback();
             }
           },
-        })
+        }),
       )
-      .pipe(new BatchTransform<OutputType>(batchSize)) as TypedReadable<OutputType[]>;
+      .pipe(new BatchTransform<OutputType>(batchSize)) as TypedReadable<
+      OutputType[]
+    >;
   }
 }

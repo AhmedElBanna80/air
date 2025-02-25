@@ -1,11 +1,13 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { notFound, onError } from "stoker/middlewares";
 import { defaultHook } from "stoker/openapi";
-import { pinoLogger } from "../middlewares/pino-logger.ts";
-import { CsvParserService } from "../services/csv-parser.ts";
+
 import type { AppBindings } from "./types.ts";
+
 import { db } from "../db/index.ts";
+import { pinoLogger } from "../middlewares/pino-logger.ts";
 import { AirQualityRepository } from "../repositories/air-quality.ts";
+import { CsvParserService } from "../services/csv-parser.ts";
 
 export function createRouter() {
   return new OpenAPIHono<AppBindings>({

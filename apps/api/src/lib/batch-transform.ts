@@ -1,4 +1,6 @@
-import { Transform, type TransformCallback } from "node:stream";
+import type { TransformCallback } from "node:stream";
+
+import { Transform } from "node:stream";
 
 export class BatchTransform<T> extends Transform {
   private batch: T[] = [];

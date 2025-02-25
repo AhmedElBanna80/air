@@ -1,5 +1,7 @@
-import { hc } from "hono/client";
 import type { OpenAPIHono } from "@hono/zod-openapi";
+
+import { hc } from "hono/client";
+
 import type { AppBindings } from "./types";
 
 // Define the API routes type

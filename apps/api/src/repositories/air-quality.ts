@@ -1,11 +1,12 @@
-import { and, between, sql } from "drizzle-orm";
-import { z } from "zod";
-import {
-  airQualityMeasurements,
-  insertAirQualitySchema,
-} from "../db/schema.ts";
 import type { PinoLogger } from "hono-pino";
+import type { z } from "zod";
+
+import { and, between, sql } from "drizzle-orm";
+
 import type { Database } from "../db/index.ts";
+import type { insertAirQualitySchema } from "../db/schema.ts";
+
+import { airQualityMeasurements } from "../db/schema.ts";
 
 type AirQualityMeasurement = z.infer<typeof insertAirQualitySchema>;
 
@@ -53,7 +54,8 @@ export class AirQualityRepository {
         });
 
       return measurements.length;
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.error("Database upsert error:", error);
       throw error;
     }

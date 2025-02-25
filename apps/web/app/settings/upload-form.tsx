@@ -1,12 +1,14 @@
+/* eslint-disable no-alert */
 "use client";
 
 import type React from "react";
+
+import { Upload } from "lucide-react";
 import { useState } from "react";
+
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { Upload } from "lucide-react";
-import { uploadAirQualityData } from "../../lib/api-client.js";
 
 export function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -16,7 +18,8 @@ export function UploadForm() {
     const selectedFile = event.target.files?.[0];
     if (selectedFile && selectedFile.type === "text/csv") {
       setFile(selectedFile);
-    } else {
+    }
+    else {
       setFile(null);
       alert("Please select a valid CSV file.");
     }
@@ -31,12 +34,13 @@ export function UploadForm() {
 
     try {
       setUploading(true);
-      await uploadAirQualityData(file);
       alert("Upload started successfully!");
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Upload failed:", error);
       alert("Failed to upload file. Please try again.");
-    } finally {
+    }
+    finally {
       setUploading(false);
       setFile(null);
       event.currentTarget.reset();

@@ -1,4 +1,4 @@
-import { pgTable, timestamp, real, serial, index } from "drizzle-orm/pg-core";
+import { index, pgTable, real, serial, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const airQualityMeasurements = pgTable(

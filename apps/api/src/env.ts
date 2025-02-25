@@ -1,3 +1,4 @@
+/* eslint-disable node/no-process-env */
 /* eslint-disable turbo/no-undeclared-env-vars */
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";

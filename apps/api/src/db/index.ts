@@ -1,8 +1,10 @@
-import pkg from "pg";
-const { Pool } = pkg;
 import { drizzle } from "drizzle-orm/node-postgres";
+import pkg from "pg";
+
 import env from "../env.ts";
 import * as schema from "./schema.ts";
+
+const { Pool } = pkg;
 
 const pool = new Pool({
   host: "localhost",

@@ -1,7 +1,9 @@
 import { serve } from "@hono/node-server";
-import createApp from "./lib/create-app.ts";
-import airQualityRouter from "./routes/air-quality/air-quality.index.ts";
+
 import env from "./env.ts";
+import createApp from "./lib/create-app.ts";
+import { LOGGER } from "./middlewares/pino-logger.ts";
+import airQualityRouter from "./routes/air-quality/air-quality.index.ts";
 
 const app = createApp();
 app.route("/api", airQualityRouter);
@@ -12,6 +14,6 @@ serve(
     port: env.PORT,
   },
   () => {
-    console.log(`Server is running on http://localhost:${env.PORT}`);
+    LOGGER.info(`Server is running on http://localhost:${env.PORT}`);
   },
 );

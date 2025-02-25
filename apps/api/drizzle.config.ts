@@ -1,4 +1,5 @@
 import type { Config } from "drizzle-kit";
+
 import * as dotenv from "dotenv";
 import { z } from "zod";
 
@@ -13,6 +14,7 @@ const envSchema = z.object({
 });
 
 // Parse environment variables
+// eslint-disable-next-line node/no-process-env
 const env = envSchema.parse(process.env);
 
 export default {

@@ -7,14 +7,16 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo check-types"
+    "check-types": "turbo check-types",
+    "lint:fix": "turbo lint:fix"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "onchange": "^7.1.0",
     "prettier": "^3.2.5",
     "turbo": "^2.3.0",
-    "typescript": "5.5.4"
+    "typescript": "5.7.3"
   },
   "dependencies": {
     "drizzle-orm": "^0.29.5",

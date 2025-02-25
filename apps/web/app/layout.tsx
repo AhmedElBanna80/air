@@ -1,10 +1,12 @@
 import type React from "react";
+
 import "@workspace/ui/globals.css";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@workspace/ui/components/providers";
-import { SidebarProvider } from "@workspace/ui/components/sidebar-context";
+
 import { Header } from "@workspace/ui/components/header";
+import { ThemeProvider } from "@workspace/ui/components/providers";
 import { Sidebar } from "@workspace/ui/components/sidebar";
+import { SidebarProvider } from "@workspace/ui/components/sidebar-context";
 
 const inter = Inter({ subsets: ["latin"] });
 

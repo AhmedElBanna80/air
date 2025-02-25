@@ -1,8 +1,8 @@
 {
   "name": "api",
+  "type": "module",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
   "exports": {
     "./types": "./src/lib/types.ts",
     "./client": "./src/lib/api-client.ts"
@@ -13,6 +13,7 @@
     "build": "tsc",
     "start": "node --experimental-transform-types src/index.ts",
     "lint": "eslint . --max-warnings 0",
+    "lint:fix": "onchange '**/*.{js,jsx,ts,tsx,json,yaml,yml}' -- pnpm exec eslint --fix .",
     "check-types": "tsc --noEmit",
     "type-check": "tsc --noEmit",
     "db:generate": "drizzle-kit generate:pg",
@@ -46,9 +47,9 @@
     "@types/pg": "^8.11.0",
     "cross-env": "^7.0.3",
     "drizzle-kit": "0.20.0",
-    "eslint": "^9.0.0",
+    "eslint": "9.21.0",
+    "eslint-plugin-drizzle": "^0.2.3",
     "tsc-alias": "^1.8.10",
-    "tsx": "^4.19.3",
-    "typescript": "^5"
+    "tsx": "^4.19.3"
   }
 }
