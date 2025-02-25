@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@api/*": ["../api/src/index.ts"]
+      "@workspace/shared-types": ["../../packages/shared-types/src"]
     },
     "plugins": [
       {
@@ -12,6 +12,9 @@
       }
     ]
   },
+  "references": [
+    { "path": "../../packages/shared-types" }
+  ],
   "include": [
     "next-env.d.ts",
     "next.config.mjs",
@@ -20,5 +23,4 @@
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
-
 }

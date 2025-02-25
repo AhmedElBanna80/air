@@ -12,6 +12,7 @@
     "lint:fix": "onchange '**/*.{js,jsx,ts,tsx,json,yaml,yml}' -- pnpm exec eslint --fix ."
   },
   "dependencies": {
+    "@air/shared-types": "workspace:*",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-dropdown-menu": "^2.1.6",
@@ -20,6 +21,7 @@
     "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "api": "workspace:*",
+    "async": "",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

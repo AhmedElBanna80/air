@@ -10,7 +10,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@workspace/shared-types": ["../../packages/shared-types/src"]
     },
     "allowImportingTsExtensions": true,
     "strict": true,

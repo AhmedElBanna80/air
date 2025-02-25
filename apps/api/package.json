@@ -25,6 +25,7 @@
     "@hono/zod-openapi": "^0.18.4",
     "@hono/zod-validator": "0.4.3",
     "@workspace/eslint-config": "workspace:*",
+    "@workspace/shared-types": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "csv-parser": "^3.2.0",
     "dotenv": "^16.4.7",

@@ -136,6 +136,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@air/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@radix-ui/react-checkbox':
         specifier: ^1.1.4
         version: 1.1.4(@types/react-dom@18.3.1)(@types/react@18.3.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -160,6 +163,9 @@ importers:
       api:
         specifier: workspace:*
         version: link:../api
+      async:
+        specifier: ''
+        version: 3.2.6
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -276,6 +282,12 @@ importers:
       typescript-eslint:
         specifier: ^8.15.0
         version: 8.18.1(eslint@9.20.0(jiti@1.21.6))(typescript@5.7.2)
+
+  packages/shared-types:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
 
   packages/typescript-config: {}
 
@@ -1979,6 +1991,9 @@ packages:
 
   as-table@1.0.55:
     resolution: {integrity: sha512-xvsWESUJn0JN421Xb9MQw6AsMHRCUknCe0Wjlxvjud80mU4E6hQf1A6NzQKcYNmYw62MfzEtXc+badstZP3JpQ==}
+
+  async@3.2.6:
+    resolution: {integrity: sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==}
 
   atomic-sleep@1.0.0:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
@@ -6668,6 +6683,8 @@ snapshots:
   as-table@1.0.55:
     dependencies:
       printable-characters: 1.0.42
+
+  async@3.2.6: {}
 
   atomic-sleep@1.0.0: {}
 
