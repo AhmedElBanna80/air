@@ -16,5 +16,15 @@ const val = await createConfig({
  * @type {import("eslint").Linter.Config}
  * */
 export const config = [
-  ...val
+  ...val,
+  {
+    // Add this section to handle JSON files
+    files: ["**/*.json"],
+    rules: {
+      "style/quote-props": "off",
+      "style/comma-dangle": "off",
+      "semi": "off",
+      "style/semi": "off",
+    },
+  },
 ]

@@ -27,7 +27,6 @@ out/
 build
 dist
 
-
 # Debug
 npm-debug.log*
 
@@ -35,3 +34,37 @@ npm-debug.log*
 .DS_Store
 *.pem
 .vscode/settings.json
+.vscode/launch.json
+
+# dev
+.yarn/
+!.yarn/releases
+.vscode/*
+!.vscode/*.code-snippets
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf
+
+# deps
+node_modules/
+
+# env
+.env
+.env.production
+
+# logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# misc
+.DS_Store
+
+dev.db
+test.db
+.vercel
+dist

@@ -1,19 +1,13 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 {
   "extends": "@workspace/typescript-config/react-library.json",
   "compilerOptions": {
-    //"outDir": "dist"
     "baseUrl": ".",
     "paths": {
       "@workspace/ui/*": ["./src/*"]
     },
+    "types": ["node"]
   },
-  "include": ["."],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../apps/web/components/sidebar.tsx", "../../apps/web/components/sidebar-context.tsx"],
   "exclude": ["node_modules", "dist"]
 }
-
-
-
-
-
-
-

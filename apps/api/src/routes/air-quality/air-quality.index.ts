@@ -1,9 +1,11 @@
 import { createRouter } from "../../lib/create-app.ts";
-import * as handlers from "./air-quality.handlers.ts";
-import * as routes from "./air-quality.routes.ts";
+import * as allData from "./all-data.ts";
+import * as measurements from "./measurements.ts";
+import * as upload from "./upload.ts";
 
 const router = createRouter()
-  .openapi(routes.measurements, handlers.getMeasurements)
-  .openapi(routes.upload, handlers.uploadMeasurements);
+  .openapi(measurements.route, measurements.handler)
+  .openapi(upload.route, upload.handler)
+  .openapi(allData.route, allData.handler);
 
 export default router;

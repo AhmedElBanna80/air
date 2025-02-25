@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { BarChart2, Calendar, Home, Settings, X } from "lucide-react";
-
+import Link from "next/link";
 import { useEffect } from "react";
-import { useSidebar } from "./sidebar-context.js";
-import { Button } from "./button.js";
+
+import { Button } from "../../../packages/ui/src/components/button.js";
+import { useSidebar } from "./sidebar-context.jsx";
 
 export function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useSidebar();
@@ -78,7 +78,8 @@ export function Sidebar() {
         <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
           onClick={toggleSidebar}
-        ></div>
+        >
+        </div>
       )}
     </>
   );

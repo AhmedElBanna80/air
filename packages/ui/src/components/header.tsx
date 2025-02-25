@@ -1,9 +1,10 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import { useSidebar } from "./sidebar-context.js";
+
 import { Button } from "./button.js";
 import { ModeToggle } from "./mode-toggle.js";
+import { useSidebar } from "../../../../apps/web/components/sidebar-context.js";
 
 export function Header() {
   const { toggleSidebar } = useSidebar();

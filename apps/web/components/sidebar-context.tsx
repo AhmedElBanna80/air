@@ -1,11 +1,13 @@
 "use client";
 
-import { createContext, type ReactNode, useContext, useState } from "react";
+import type { ReactNode } from "react";
 
-interface SidebarContextType {
+import { createContext, useContext, useState } from "react";
+
+type SidebarContextType = {
   isSidebarOpen: boolean;
   toggleSidebar: () => void;
-}
+};
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
