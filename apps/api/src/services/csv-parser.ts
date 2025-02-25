@@ -1,136 +1,99 @@
-import { Readable } from "node:stream";
+import { BatchTransform } from './../lib/batch-transform.ts';
+import { Readable, Transform } from "node:stream";
 import { ReadableStream } from "node:stream/web";
-import Papa from "papaparse";
+import * as csv from "fast-csv";
 import { z } from "zod";
-import { insertAirQualitySchema } from "@/db/schema.js";
+import { PinoLogger } from "hono-pino";
+import { type TypedReadable } from '../lib/types.ts';
 
-export type CsvParserCallback = (
-  measurement: z.infer<typeof insertAirQualitySchema>,
-) => Promise<void>;
+// Define input and output schemas
+const inputSchema = z.object({
+  Date: z.string(),
+  Time: z.string(),
+  "CO(GT)": z.string(),
+  "PT08.S1(CO)": z.string(),
+  "NMHC(GT)": z.string(),
+  "C6H6(GT)": z.string(),
+  "PT08.S2(NMHC)": z.string(),
+  "NOx(GT)": z.string(),
+  "PT08.S3(NOx)": z.string(),
+  "NO2(GT)": z.string(),
+  "PT08.S4(NO2)": z.string(),
+  "PT08.S5(O3)": z.string(),
+  T: z.string(),
+  RH: z.string(),
+  AH: z.string(),
+});
+
+const outputSchema = inputSchema.transform((row) => {
+  const [day, month, year] = row.Date.split("/").map(Number);
+  const [hour, minute, second] = row.Time.split(".").map(Number);
+  const timestamp = new Date(Number(year), Number(month) - 1, day, hour, minute, second);
+  const parseNumber = (s: string) => Number(s.replace(",", "."));
+  return {
+    timestamp,
+    coGT: parseNumber(row["CO(GT)"]),
+    coS1: parseNumber(row["PT08.S1(CO)"]),
+    nmhcGT: parseNumber(row["NMHC(GT)"]),
+    benzeneGT: parseNumber(row["C6H6(GT)"]),
+    nmhcS2: parseNumber(row["PT08.S2(NMHC)"]),
+    noxGT: parseNumber(row["NOx(GT)"]),
+    noxS3: parseNumber(row["PT08.S3(NOx)"]),
+    no2GT: parseNumber(row["NO2(GT)"]),
+    no2S4: parseNumber(row["PT08.S4(NO2)"]),
+    o3S5: parseNumber(row["PT08.S5(O3)"]),
+    temperature: parseNumber(row.T),
+    relativeHumidity: parseNumber(row.RH),
+    absoluteHumidity: parseNumber(row.AH),
+  };
+});
+
+export type InputType = z.infer<typeof inputSchema>;
+export type OutputType = z.infer<typeof outputSchema>;
+
 
 export class CsvParserService {
-  async parseAirQualityData(
-    file: File,
-    onMeasurement: CsvParserCallback,
-  ): Promise<{ rowsProcessed: number }> {
+  constructor(private readonly logger: PinoLogger) {}
+
+  // Here we explicitly annotate that the stream emits batches (arrays) of OutputType.
+  parseAirQualityData(file: File, batchSize: number = 1000): TypedReadable<OutputType[]> {
     const webStream: ReadableStream = file.stream() as ReadableStream;
-    const stream = Readable.fromWeb(webStream);
+    const nodeStream = Readable.fromWeb(webStream);
 
-    let rowCount = 0;
-    let isFirstRow = true;
-    let currentMonth = 3;
-    let currentYear = 2004;
-
-    return new Promise((resolve, reject) => {
-      Papa.parse(stream, {
-        delimiter: ";",
-        header: false,
-        skipEmptyLines: "greedy",
-        transform: (value) => {
-          if (value.trim() === "") return null;
-          const normalized = value.replace(",", ".");
-          const num = parseFloat(normalized);
-          return isNaN(num) ? value : num;
-        },
-        step: async (results) => {
-          try {
-            if (isFirstRow) {
-              isFirstRow = false;
-              return;
+    // Create a pipeline that:
+    // 1. Parses CSV rows into objects (InputType),
+    // 2. Transforms them via Zod into OutputType,
+    // 3. Batches them into arrays of OutputType.
+    return nodeStream
+      .pipe(
+        csv.parse<InputType, OutputType>({
+          delimiter: ";",
+          headers: true,
+          ignoreEmpty: true,
+          trim: true,
+        })
+      )
+      .transform((row: InputType) => {
+        try {
+          return outputSchema.parse(row);
+        } catch (error) {
+          this.logger.error({ error, row }, "Error parsing row");
+          // Skip invalid rows by returning null
+          return null;
+        }
+      })
+      .pipe(
+        new Transform({
+          objectMode: true,
+          transform(chunk: OutputType | null, _encoding, callback) {
+            if (chunk !== null) {
+              callback(null, chunk);
+            } else {
+              callback();
             }
-
-            const row = results.data as (string | number)[];
-            if (!Array.isArray(row) || row.length < 15) {
-              console.log("Invalid row length:", row);
-              return;
-            }
-
-            const day = Number(row[0]);
-            const hour = Number(row[1]);
-
-            if (
-              isNaN(day) ||
-              day < 1 ||
-              day > 31 ||
-              isNaN(hour) ||
-              hour < 0 ||
-              hour > 23
-            ) {
-              console.log("Invalid date/time components:", {
-                day,
-                hour,
-                currentMonth,
-                currentYear,
-              });
-              return;
-            }
-
-            const timestamp = new Date(
-              currentYear,
-              currentMonth - 1,
-              day,
-              hour,
-              0,
-            );
-
-            if (isNaN(timestamp.getTime())) {
-              console.log("Invalid timestamp created:", timestamp);
-              return;
-            }
-
-            const measurement: z.infer<typeof insertAirQualitySchema> = {
-              timestamp,
-              coGT: Number(row[2]),
-              coS1: Number(row[3]),
-              nmhcGT: Number(row[4]),
-              nmhcS2: Number(row[5]),
-              benzeneGT: Number(row[6]),
-              noxGT: Number(row[7]),
-              noxS3: Number(row[8]),
-              no2GT: Number(row[9]),
-              no2S4: Number(row[10]),
-              o3S5: Number(row[11]),
-              temperature: Number(row[12]),
-              relativeHumidity: Number(row[13]),
-              absoluteHumidity: Number(row[14]),
-            };
-
-            const hasInvalidNumber = Object.entries(measurement).some(
-              ([key, value]) => {
-                if (key === "timestamp") return false;
-                if (typeof value === "number") {
-                  return isNaN(value) || value === null;
-                }
-                return false;
-              },
-            );
-
-            if (hasInvalidNumber) {
-              console.log("Row contains NaN or null values - skipping");
-              return;
-            }
-
-            await onMeasurement(measurement);
-            rowCount++;
-          } catch (error) {
-            console.error("Error processing row:", error);
-          }
-        },
-        complete: (results) => {
-          if (results.errors.length > 0) {
-            console.error("Parsing errors:", results.errors);
-            reject(new Error("CSV parsing failed"));
-            return;
-          }
-          resolve({ rowsProcessed: rowCount });
-        },
-        error: (error) => {
-          console.error("Parser error:", error);
-          reject(error);
-        },
-      });
-    });
+          },
+        })
+      )
+      .pipe(new BatchTransform<OutputType>(batchSize)) as TypedReadable<OutputType[]>;
   }
 }
-
-export const csvParserService = new CsvParserService();

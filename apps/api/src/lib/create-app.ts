@@ -1,11 +1,11 @@
-import { OpenAPIHono, RouteConfig, RouteHandler } from "@hono/zod-openapi";
-import { pinoLogger } from "../middlewares/pino-logger.js";
-import type { AppBindings } from "./types.js";
-import { airQualityRepository } from "../repositories/air-quality.js";
-import { CsvParserService } from "../services/csv-parser.js";
-import { defaultHook } from "stoker/openapi";
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { notFound, onError } from "stoker/middlewares";
-import { BASE_PATH } from "./constants.js";
+import { defaultHook } from "stoker/openapi";
+import { pinoLogger } from "../middlewares/pino-logger.ts";
+import { CsvParserService } from "../services/csv-parser.ts";
+import type { AppBindings } from "./types.ts";
+import { db } from "../db/index.ts";
+import { AirQualityRepository } from "../repositories/air-quality.ts";
 
 export function createRouter() {
   return new OpenAPIHono<AppBindings>({
@@ -16,22 +16,16 @@ export function createRouter() {
 
 export default function createApp() {
   const app = createRouter();
-  const csvParserService = new CsvParserService();
 
   app.use(pinoLogger());
   app.use("*", pinoLogger());
   app.use("*", async (c, next) => {
-    c.set("airQualityRepository", airQualityRepository);
-    c.set("csvParserService", csvParserService);
+    c.set("db", db);
+    c.set("airQualityRepository", new AirQualityRepository(db, c.var.logger));
+    c.set("csvParserService", new CsvParserService(c.var.logger));
     await next();
   });
   app.notFound(notFound);
   app.onError(onError);
   return app;
 }
-export type AppOpenAPI = OpenAPIHono<AppBindings, {}, typeof BASE_PATH>;
-
-export type AppRouteHandler<R extends RouteConfig> = RouteHandler<
-  R,
-  AppBindings
->;

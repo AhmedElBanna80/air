@@ -1,12 +1,9 @@
 import { hc } from "hono/client";
 import type { OpenAPIHono } from "@hono/zod-openapi";
+import type { AppBindings } from "./types";
 
 // Define the API routes type
-type AppType = OpenAPIHono<{
-  Variables: {
-    logger: any; // You can make this more specific if needed
-  };
-}>;
+type AppType = OpenAPIHono<AppBindings>;
 
 // Create type-safe client
 export const client = hc<AppType>("http://localhost:3001/api");

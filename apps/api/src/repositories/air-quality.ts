@@ -1,8 +1,11 @@
-import { airQualityMeasurements, insertAirQualitySchema } from "@/db/schema.js";
 import { and, between, sql } from "drizzle-orm";
-import { type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { z } from "zod";
-import { db } from "../db/index.js";
+import {
+  airQualityMeasurements,
+  insertAirQualitySchema,
+} from "../db/schema.ts";
+import type { PinoLogger } from "hono-pino";
+import type { Database } from "../db/index.ts";
 
 type AirQualityMeasurement = z.infer<typeof insertAirQualitySchema>;
 
@@ -16,13 +19,16 @@ type AirQualityStats = {
 };
 
 export class AirQualityRepository {
-  constructor(private readonly db: NodePgDatabase) {}
+  constructor(
+    private readonly db: Database,
+    private readonly logger: PinoLogger,
+  ) {}
 
   async insertBatch(measurements: AirQualityMeasurement[]) {
     if (measurements.length === 0) {
       return 0;
     }
-  
+
     try {
       await this.db
         .insert(airQualityMeasurements)
@@ -30,29 +36,28 @@ export class AirQualityRepository {
         .onConflictDoUpdate({
           target: [airQualityMeasurements.timestamp],
           set: {
-            coGT: sql`excluded.cogt`,
-            coS1: sql`excluded.cos1`,
-            nmhcGT: sql`excluded.nmhcgt`,
-            nmhcS2: sql`excluded.nmhcs2`,
-            benzeneGT: sql`excluded.benzenegt`,
-            noxGT: sql`excluded.noxgt`,
-            noxS3: sql`excluded.noxs3`,
-            no2GT: sql`excluded.no2gt`,
-            no2S4: sql`excluded.no2s4`,
-            o3S5: sql`excluded.o3s5`,
+            coGT: sql`excluded.co_gt`,
+            coS1: sql`excluded.co_s1`,
+            nmhcGT: sql`excluded.nmhc_gt`,
+            nmhcS2: sql`excluded.nmhc_s2`,
+            benzeneGT: sql`excluded.benzene_gt`,
+            noxGT: sql`excluded.nox_gt`,
+            noxS3: sql`excluded.nox_s3`,
+            no2GT: sql`excluded.no2_gt`,
+            no2S4: sql`excluded.no2_s4`,
+            o3S5: sql`excluded.o3_s5`,
             temperature: sql`excluded.temperature`,
             relativeHumidity: sql`excluded.relative_humidity`,
             absoluteHumidity: sql`excluded.absolute_humidity`,
           },
         });
-  
+
       return measurements.length;
     } catch (error) {
-      console.error("Database upsert error:", error);
+      this.logger.error("Database upsert error:", error);
       throw error;
     }
   }
-  
 
   async queryByTimeRange(
     from: Date,
@@ -83,7 +88,3 @@ export class AirQualityRepository {
       .limit(limit || Number.MAX_SAFE_INTEGER);
   }
 }
-
-export const airQualityRepository = new AirQualityRepository(
-  db as unknown as NodePgDatabase,
-);

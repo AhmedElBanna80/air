@@ -1,5 +1,6 @@
 import { createRoute } from "@hono/zod-openapi";
 
+
 import { StatusCodes } from "http-status-codes";
 import { jsonContent } from "stoker/openapi/helpers";
 import { z } from "zod";
@@ -9,7 +10,10 @@ const tags = ["Air Quality"];
 const querySchema = z.object({
   from: z.string().transform((val) => new Date(val)),
   to: z.string().transform((val) => new Date(val)),
-  limit: z.number().min(1).max(10000).optional(),
+  limit: z.string()
+    .transform((val) => parseInt(val, 10))
+    .pipe(z.number().min(1).max(10000))
+    .optional(),
 });
 
 export const measurements = createRoute({
