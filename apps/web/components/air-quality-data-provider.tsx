@@ -1,19 +1,17 @@
 "use client";
 
+import type React from "react";
 import type { DateRange } from "react-day-picker";
 
 import { format } from "date-fns";
-import { Maximize2, Minimize2, Settings } from "lucide-react";
+import { Maximize2, Minimize2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
-import { DateRangePicker } from "./date-range-picker";
-import { SettingsContent } from "./settings-content";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { FilterForm } from "./filter-form";
 
 type Measurement = {
   "timestamp": string;
@@ -52,61 +50,6 @@ const properties = [
   { key: "AH", label: "Absolute Humidity", color: "#ffd700" },
 ];
 
-export function PopoverDemo() {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Settings className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
-      </PopoverContent>
-    </Popover>
-  );
-}
-type CustomLegendProps = {
-  properties: Array<{ key: string; label: string; color: string }>;
-  selectedProperties: string[];
-  toggleProperty: (property: string) => void;
-};
-
-const CustomLegend: React.FC<CustomLegendProps> = ({ properties, selectedProperties, toggleProperty }) => {
-  return (
-    <div className="flex flex-wrap gap-3 p-2">
-      {properties.map(prop => (
-        <label key={prop.key} className="flex items-center space-x-1 cursor-pointer">
-          <div className="relative">
-            <input
-              type="checkbox"
-              checked={selectedProperties.includes(prop.key)}
-              onChange={() => toggleProperty(prop.key)}
-              className="sr-only"
-            />
-            <div
-              className={`w-3 h-3 border rounded-full ${
-                selectedProperties.includes(prop.key) ? "bg-primary border-primary" : "bg-background border-gray-300"
-              }`}
-              style={{ borderColor: prop.color }}
-            >
-              {selectedProperties.includes(prop.key) && (
-                <div className="absolute inset-0 flex items-center justify-center" style={{ color: prop.color }}>
-                  <svg className="w-2 h-2 fill-current" viewBox="0 0 20 20">
-                    <circle cx="10" cy="10" r="4" />
-                  </svg>
-                </div>
-              )}
-            </div>
-          </div>
-          <span className="text-xs font-medium" style={{ color: prop.color }}>
-            {prop.label}
-          </span>
-        </label>
-      ))}
-    </div>
-  );
-};
-
 export default function AirQualityChart({ data }: AirQualityChartProps) {
   const [selectedProperties, setSelectedProperties] = useState<string[]>(["T", "RH"]);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -114,7 +57,6 @@ export default function AirQualityChart({ data }: AirQualityChartProps) {
     from: new Date(2004, 2, 10),
     to: new Date(2004, 2, 17),
   });
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
   const toggleProperty = (property: string) => {
@@ -125,11 +67,8 @@ export default function AirQualityChart({ data }: AirQualityChartProps) {
 
   const chartData = useMemo(() => {
     if (!data || data.length === 0) {
-      console.log("No data available");
       return [];
     }
-
-    console.log("Processing data in AirQualityChart:", data.length);
 
     let processedData = data
       .map(d => ({
@@ -168,12 +107,8 @@ export default function AirQualityChart({ data }: AirQualityChartProps) {
     setIsFullscreen(document.fullscreenElement !== null);
   }, []);
 
-  const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
+  const handleFilterSubmit = (newDateRange: DateRange | undefined) => {
     setDateRange(newDateRange);
-  };
-
-  const toggleSettings = () => {
-    setIsSettingsOpen(!isSettingsOpen);
   };
 
   useEffect(() => {
@@ -185,7 +120,7 @@ export default function AirQualityChart({ data }: AirQualityChartProps) {
 
   if (!data || data.length === 0) {
     return (
-      <Card>
+      <Card className="h-full">
         <CardHeader>
           <CardDescription>No data available</CardDescription>
         </CardHeader>
@@ -194,8 +129,8 @@ export default function AirQualityChart({ data }: AirQualityChartProps) {
   }
 
   return (
-    <div className="h-full w-full flex flex-col">
-      <CardHeader className="pb-2">
+    <Card className="h-full flex flex-col">
+      <CardHeader className="pb-2 flex-shrink-0">
         <div className="flex justify-between items-center">
           <CardDescription>
             {dateRange?.from && dateRange?.to
@@ -215,18 +150,15 @@ export default function AirQualityChart({ data }: AirQualityChartProps) {
                 )}
           </CardDescription>
           <div className="flex gap-2">
-            <DateRangePicker
-              value={dateRange}
-              onChange={handleDateRangeChange}
-            />
+            <FilterForm onSubmit={handleFilterSubmit} initialDateRange={dateRange} />
             <Button onClick={toggleFullscreen} variant="outline" size="icon">
               {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 p-0">
-        <div ref={chartRef} className={`h-[calc(100vh-12rem)] ${isFullscreen ? "h-screen" : ""}`}>
+      <CardContent className="flex-grow p-0 overflow-hidden">
+        <div ref={chartRef} className="w-full h-full min-h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={chartData}
@@ -268,21 +200,48 @@ export default function AirQualityChart({ data }: AirQualityChartProps) {
           </ResponsiveContainer>
         </div>
       </CardContent>
-      <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>Chart Settings</SheetTitle>
-            <SheetDescription>Adjust the date range and select properties to display.</SheetDescription>
-          </SheetHeader>
-          <SettingsContent
-            properties={properties}
-            selectedProperties={selectedProperties}
-            toggleProperty={toggleProperty}
-            dateRange={dateRange}
-            onDateRangeChange={handleDateRangeChange}
-          />
-        </SheetContent>
-      </Sheet>
-    </div>
+    </Card>
   );
 }
+
+type CustomLegendProps = {
+  properties: Array<{ key: string; label: string; color: string }>;
+  selectedProperties: string[];
+  toggleProperty: (property: string) => void;
+};
+
+const CustomLegend: React.FC<CustomLegendProps> = ({ properties, selectedProperties, toggleProperty }) => {
+  return (
+    <div className="flex flex-wrap gap-3 p-2">
+      {properties.map(prop => (
+        <label key={prop.key} className="flex items-center space-x-1 cursor-pointer">
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={selectedProperties.includes(prop.key)}
+              onChange={() => toggleProperty(prop.key)}
+              className="sr-only"
+            />
+            <div
+              className={`w-3 h-3 border rounded-full ${
+                selectedProperties.includes(prop.key) ? "bg-primary border-primary" : "bg-background border-gray-300"
+              }`}
+              style={{ borderColor: prop.color }}
+            >
+              {selectedProperties.includes(prop.key) && (
+                <div className="absolute inset-0 flex items-center justify-center" style={{ color: prop.color }}>
+                  <svg className="w-2 h-2 fill-current" viewBox="0 0 20 20">
+                    <circle cx="10" cy="10" r="4" />
+                  </svg>
+                </div>
+              )}
+            </div>
+          </div>
+          <span className="text-xs font-medium" style={{ color: prop.color }}>
+            {prop.label}
+          </span>
+        </label>
+      ))}
+    </div>
+  );
+};

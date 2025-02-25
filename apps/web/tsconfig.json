@@ -3,7 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@api/*": ["../api/src/index.ts"]
     },
     "plugins": [
       {
@@ -19,4 +20,5 @@
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
+
 }

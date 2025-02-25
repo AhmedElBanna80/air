@@ -4,8 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "exports": {
-    "./types": "./src/lib/types.ts",
-    "./client": "./src/lib/api-client.ts"
+    "./types": "./src/lib/types.ts"
   },
   "main": "src/index.ts",
   "scripts": {
