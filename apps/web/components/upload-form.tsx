@@ -1,4 +1,3 @@
-/* eslint-disable no-alert */
 "use client";
 
 import type React from "react";
@@ -6,9 +5,9 @@ import type React from "react";
 import { Upload } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
-import { Label } from "@workspace/ui/components/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -34,6 +33,8 @@ export function UploadForm() {
 
     try {
       setUploading(true);
+      // TODO: Implement actual file upload logic here
+      console.log("Uploading file:", file.name);
       alert("Upload started successfully!");
     }
     catch (error) {

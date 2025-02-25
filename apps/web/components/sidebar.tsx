@@ -4,8 +4,9 @@ import { BarChart2, Calendar, Home, Settings, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
-import { Button } from "../../../packages/ui/src/components/button.js";
-import { useSidebar } from "./sidebar-context.jsx";
+import { Button } from "@/components/ui/button";
+
+import { useSidebar } from "./sidebar-context";
 
 export function Sidebar() {
   const { isSidebarOpen, toggleSidebar } = useSidebar();
@@ -30,12 +31,7 @@ export function Sidebar() {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4 md:hidden"
-          onClick={toggleSidebar}
-        >
+        <Button variant="ghost" size="icon" className="absolute right-4 top-4 md:hidden" onClick={toggleSidebar}>
           <X className="h-6 w-6" />
           <span className="sr-only">Close sidebar</span>
         </Button>
@@ -75,11 +71,7 @@ export function Sidebar() {
         </nav>
       </aside>
       {isSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
-          onClick={toggleSidebar}
-        >
-        </div>
+        <div className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden" onClick={toggleSidebar}></div>
       )}
     </>
   );

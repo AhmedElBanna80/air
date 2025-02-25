@@ -1,14 +1,21 @@
+import type { Metadata } from "next";
 import type React from "react";
 
-import "@workspace/ui/globals.css";
 import { Inter } from "next/font/google";
 
+import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 import { SidebarProvider } from "@/components/sidebar-context";
-import { Header } from "@workspace/ui/components/header";
-import { ThemeProvider } from "@workspace/ui/components/providers";
+import { ThemeProvider } from "@/components/theme-provider";
+
+import "@/app/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Air Quality Analysis",
+  description: "Analyze and visualize air quality data",
+};
 
 export default function RootLayout({
   children,
@@ -18,12 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <SidebarProvider>
             <div className="flex h-screen flex-col">
               <Header />

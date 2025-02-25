@@ -19,11 +19,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
     document.body.classList.toggle("sidebar-open");
   };
 
-  return (
-    <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
-      {children}
-    </SidebarContext.Provider>
-  );
+  return <SidebarContext.Provider value={{ isSidebarOpen, toggleSidebar }}>{children}</SidebarContext.Provider>;
 }
 
 export function useSidebar() {
