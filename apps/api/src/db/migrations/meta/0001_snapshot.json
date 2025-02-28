@@ -1,406 +1,203 @@
 {
-  "version": "6",
-  "dialect": "sqlite",
-  "id": "072d000f-94da-4903-ac87-ae4f6de52b26",
-  "prevId": "13a52c6e-b245-4f99-ae64-f78e13b12062",
+  "id": "ab4cedfb-47f1-4911-a031-ab5fba54167f",
+  "prevId": "56a871ed-2535-4f30-9fac-41f2419a67b0",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "tasks": {
-      "name": "tasks",
+    "public.parameters": {
+      "name": "parameters",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
+          "notNull": true
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "done": {
-          "name": "done",
-          "type": "integer",
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
+          "notNull": true
         },
-        "createdAt": {
-          "name": "createdAt",
-          "type": "integer",
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
-        "updatedAt": {
-          "name": "updatedAt",
-          "type": "integer",
+        "unit": {
+          "name": "unit",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true
+        },
+        "min_safe_value": {
+          "name": "min_safe_value",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "max_safe_value": {
+          "name": "max_safe_value",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "account": {
-      "name": "account",
-      "columns": {
-        "userId": {
-          "name": "userId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "provider": {
-          "name": "provider",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "providerAccountId": {
-          "name": "providerAccountId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "refresh_token": {
-          "name": "refresh_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "access_token": {
-          "name": "access_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "expires_at": {
-          "name": "expires_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "token_type": {
-          "name": "token_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "scope": {
-          "name": "scope",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "id_token": {
-          "name": "id_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "session_state": {
-          "name": "session_state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "account_userId_user_id_fk": {
-          "name": "account_userId_user_id_fk",
-          "tableFrom": "account",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "account_provider_providerAccountId_pk": {
+      "uniqueConstraints": {
+        "parameters_name_unique": {
+          "name": "parameters_name_unique",
           "columns": [
-            "provider",
-            "providerAccountId"
+            "name"
           ],
-          "name": "account_provider_providerAccountId_pk"
+          "nullsNotDistinct": false
         }
       },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
-    "authenticator": {
-      "name": "authenticator",
+    "public.air_quality_measurements": {
+      "name": "air_quality_measurements",
+      "schema": "",
       "columns": {
-        "credentialID": {
-          "name": "credentialID",
-          "type": "text",
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "userId": {
-          "name": "userId",
-          "type": "text",
+        "co_gt": {
+          "name": "co_gt",
+          "type": "real",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "providerAccountId": {
-          "name": "providerAccountId",
-          "type": "text",
+        "co_s1": {
+          "name": "co_s1",
+          "type": "real",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "credentialPublicKey": {
-          "name": "credentialPublicKey",
-          "type": "text",
+        "nmhc_gt": {
+          "name": "nmhc_gt",
+          "type": "real",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "counter": {
-          "name": "counter",
-          "type": "integer",
+        "nmhc_s2": {
+          "name": "nmhc_s2",
+          "type": "real",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "credentialDeviceType": {
-          "name": "credentialDeviceType",
-          "type": "text",
+        "benzene_gt": {
+          "name": "benzene_gt",
+          "type": "real",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "credentialBackedUp": {
-          "name": "credentialBackedUp",
-          "type": "integer",
+        "nox_gt": {
+          "name": "nox_gt",
+          "type": "real",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "transports": {
-          "name": "transports",
-          "type": "text",
+        "nox_s3": {
+          "name": "nox_s3",
+          "type": "real",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true
+        },
+        "no2_gt": {
+          "name": "no2_gt",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "no2_s4": {
+          "name": "no2_s4",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "o3_s5": {
+          "name": "o3_s5",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "temperature": {
+          "name": "temperature",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relative_humidity": {
+          "name": "relative_humidity",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "absolute_humidity": {
+          "name": "absolute_humidity",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {
-        "authenticator_credentialID_unique": {
-          "name": "authenticator_credentialID_unique",
+        "timestamp_idx": {
+          "name": "timestamp_idx",
           "columns": [
-            "credentialID"
+            {
+              "expression": "timestamp",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {
-        "authenticator_userId_user_id_fk": {
-          "name": "authenticator_userId_user_id_fk",
-          "tableFrom": "authenticator",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "authenticator_userId_credentialID_pk": {
-          "columns": [
-            "userId",
-            "credentialID"
-          ],
-          "name": "authenticator_userId_credentialID_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "session": {
-      "name": "session",
-      "columns": {
-        "sessionToken": {
-          "name": "sessionToken",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "userId": {
-          "name": "userId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "expires": {
-          "name": "expires",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "session_userId_user_id_fk": {
-          "name": "session_userId_user_id_fk",
-          "tableFrom": "session",
-          "tableTo": "user",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "user": {
-      "name": "user",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "emailVerified": {
-          "name": "emailVerified",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "image": {
-          "name": "image",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "user_email_unique": {
-          "name": "user_email_unique",
-          "columns": [
-            "email"
-          ],
-          "isUnique": true
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "verificationToken": {
-      "name": "verificationToken",
-      "columns": {
-        "identifier": {
-          "name": "identifier",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "expires": {
-          "name": "expires",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "verificationToken_identifier_token_pk": {
+      "uniqueConstraints": {
+        "air_quality_measurements_timestamp_unique": {
+          "name": "air_quality_measurements_timestamp_unique",
           "columns": [
-            "identifier",
-            "token"
+            "timestamp"
           ],
-          "name": "verificationToken_identifier_token_pk"
+          "nullsNotDistinct": false
         }
       },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
-  "views": {},
   "enums": {},
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "internal": {
-    "indexes": {}
+    "tables": {}
   }
 }

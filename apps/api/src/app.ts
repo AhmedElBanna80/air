@@ -1,9 +1,11 @@
-import createApp from "@/api/lib/create-app";
-import { registerRoutes } from "@/api/routes";
+import { serve } from '@hono/node-server'
+import app from './routes/air-measurements'
+import env from './env'
 
-import configureOpenAPI from "./lib/configure-open-api";
-
-const app = registerRoutes(createApp());
-configureOpenAPI(app);
-
-export default app;
+// Start server
+serve({
+  fetch: app.fetch,
+  port: env.PORT
+}, (info) => {
+  console.log(`Server running on http://localhost:${info.port}`)
+}) 

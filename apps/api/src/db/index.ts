@@ -1,11 +1,19 @@
-import { drizzle } from "drizzle-orm/d1";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pkg from "pg";
 
-import type { AppEnv } from "../lib/types";
-
+import env from "../env";
 import * as schema from "./schema";
 
-export function createDb(env: AppEnv["Bindings"]) {
-  return drizzle(env.DB, {
-    schema,
-  });
-}
+const { Pool } = pkg;
+
+const pool = new Pool({
+  host: "localhost",
+  port: 5432,
+  user: env.POSTGRES_USER,
+  password: env.POSTGRES_PASSWORD,
+  database: env.POSTGRES_DB,
+});
+
+export const db = drizzle(pool, { schema });
+
+export type Database = typeof db;

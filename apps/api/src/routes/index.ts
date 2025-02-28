@@ -1,20 +1,8 @@
-/* eslint-disable ts/no-redeclare */
-import createRouter from "@/api/lib/create-router";
+import { Hono } from "hono";
+import airMeasurementsApp  from "./air-measurements";
 
-import type { AppOpenAPI } from "../lib/types";
+const indexRoute = new Hono()
 
-import { BASE_PATH } from "../lib/constants";
-import index from "./index.route";
-import tasks from "./tasks/tasks.index";
+indexRoute.route('/air-measurements', airMeasurementsApp)
 
-export function registerRoutes(app: AppOpenAPI) {
-  return app
-    .route("/", index)
-    .route("/", tasks);
-}
-
-// stand alone router type used for api client
-export const router = registerRoutes(
-  createRouter().basePath(BASE_PATH),
-);
-export type router = typeof router;
+export { indexRoute };
