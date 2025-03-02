@@ -1,6 +1,6 @@
 import { inject, Injectable, Scope, Scoped } from 'di-wise';
 import { DataBase } from '../db/database.provider';
-import env from '../env';
+import env from '@/api/env';
 import { ContextToken, ContextType } from './types';
 
 

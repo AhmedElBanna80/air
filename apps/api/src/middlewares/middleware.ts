@@ -1,8 +1,8 @@
 import { Context } from 'hono'
 import { Container, Token } from 'di-wise'
 import { Type } from 'di-wise'
-import type { Hono } from 'hono'
-import { ContextToken, AppEnv } from '@/api/context'
+  import type { Hono } from 'hono'
+  import { ContextToken, AppEnv } from '@/api/services/context'
 // Create tokens for Hono types
 export const HonoContext = Type<Context>('HonoContext')
 export const HonoApp = Type<Hono<AppEnv>>('HonoApp')
