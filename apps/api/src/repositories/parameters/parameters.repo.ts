@@ -1,11 +1,13 @@
 import { inject, Injectable } from "di-wise";
 import { eq } from "drizzle-orm";
-import { LoggerToken } from "../../services/logger/logger.types";
-import { ParameterData, ParameterRepositoryType, ParametersRepo } from "./parameters.types";
+
 import { DataBase } from "@/api/services/db/database.provider";
 import { parameters } from "@/api/services/db/schema/parameters";
 
+import type { ParameterData, ParameterRepositoryType } from "./parameters.types";
 
+import { LoggerToken } from "../../services/logger/logger.types";
+import { ParametersRepo } from "./parameters.types";
 
 @Injectable<ParametersRepository>(ParametersRepo)
 export class ParametersRepository implements ParameterRepositoryType {
@@ -15,7 +17,8 @@ export class ParametersRepository implements ParameterRepositoryType {
   async getAllParameters(): Promise<ParameterData[]> {
     try {
       return await this.db.select().from(parameters);
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.error("Error fetching parameters:", error);
       throw error;
     }
@@ -27,9 +30,10 @@ export class ParametersRepository implements ParameterRepositoryType {
         .select()
         .from(parameters)
         .where(eq(parameters.name, name));
-      
+
       return result[0];
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.error(`Error fetching parameter by name ${name}:`, error);
       throw error;
     }
@@ -41,9 +45,10 @@ export class ParametersRepository implements ParameterRepositoryType {
         .select()
         .from(parameters)
         .where(eq(parameters.id, id));
-      
+
       return result[0];
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.error(`Error fetching parameter by id ${id}:`, error);
       throw error;
     }

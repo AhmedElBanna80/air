@@ -68,6 +68,9 @@ importers:
         specifier: ^3.24.1
         version: 3.24.1
     devDependencies:
+      '@tasks-app/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@types/node':
         specifier: ^22.10.2
         version: 22.10.2
@@ -80,6 +83,12 @@ importers:
       '@vitest/coverage-c8':
         specifier: ^0.33.0
         version: 0.33.0(vitest@3.0.7(@types/debug@4.1.12)(@types/node@22.10.2)(jiti@2.4.1)(tsx@4.19.3)(yaml@2.6.1))
+      eslint:
+        specifier: ^9.17.0
+        version: 9.17.0(jiti@2.4.1)
+      eslint-plugin-drizzle:
+        specifier: ^0.2.3
+        version: 0.2.3(eslint@9.17.0(jiti@2.4.1))
       tsx:
         specifier: ^4.19.3
         version: 4.19.3
@@ -1801,6 +1810,11 @@ packages:
     resolution: {integrity: sha512-T0bHZ1oblW1xUHUVoBKZJR2osSNNGkfZuK4iqboNwuNS/M7tdp3pmURaJtTi/XDzitxaQ02lvOdFH0mUd5QLvQ==}
     peerDependencies:
       eslint: '*'
+
+  eslint-plugin-drizzle@0.2.3:
+    resolution: {integrity: sha512-BO+ymHo33IUNoJlC0rbd7HP9EwwpW4VIp49R/tWQF/d2E1K2kgTf0tCXT0v9MSiBr6gGR1LtPwMLapTKEWSg9A==}
+    peerDependencies:
+      eslint: '>=8.0.0'
 
   eslint-plugin-es-x@7.8.0:
     resolution: {integrity: sha512-7Ds8+wAAoV3T+LAKeu39Y5BzXCrGKrcISfgKEqTS4BDN8SFEDQd0S43jiQ8vIa3wUKD07qitZdfzlenSi8/0qQ==}
@@ -4431,7 +4445,7 @@ snapshots:
       '@vue/compiler-ssr': 3.5.13
       '@vue/shared': 3.5.13
       estree-walker: 2.0.2
-      magic-string: 0.30.15
+      magic-string: 0.30.17
       postcss: 8.4.49
       source-map-js: 1.2.1
 
@@ -4834,6 +4848,10 @@ snapshots:
   eslint-plugin-command@0.2.6(eslint@9.17.0(jiti@2.4.1)):
     dependencies:
       '@es-joy/jsdoccomment': 0.48.0
+      eslint: 9.17.0(jiti@2.4.1)
+
+  eslint-plugin-drizzle@0.2.3(eslint@9.17.0(jiti@2.4.1)):
+    dependencies:
       eslint: 9.17.0(jiti@2.4.1)
 
   eslint-plugin-es-x@7.8.0(eslint@9.17.0(jiti@2.4.1)):

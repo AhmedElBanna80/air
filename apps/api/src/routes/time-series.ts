@@ -1,10 +1,10 @@
-import { Hono } from 'hono';
-import { z } from 'zod';
-import { Validator } from '../lib/validator';
-import { inject } from '../middlewares/middleware';
+import { Hono } from "hono";
+import { z } from "zod";
 
-import { AirQualityServiceToken } from '../services/air-quality';
-import { bucketWidthEnum } from './air-measurements';
+import { Validator } from "../lib/validator";
+import { inject } from "../middlewares/middleware";
+import { AirQualityServiceToken } from "../services/air-quality";
+import { bucketWidthEnum } from "./air-measurements";
 
 // Define the query schema
 const querySchema = z.object({
@@ -22,27 +22,28 @@ const app = new Hono();
 
 // GET time series data with integrated parameter information
 app.get(
-  '/',
-  Validator('query', querySchema),
+  "/",
+  Validator("query", querySchema),
   async (c) => {
-    const { from, to, groupBy, limit } = c.req.valid('query');
-    
+    const { from, to, groupBy, limit } = c.req.valid("query");
+
     try {
       const airQualityService = inject(c, AirQualityServiceToken);
       const timeSeriesData = await airQualityService.getTimeSeriesData(from, to, groupBy, limit);
-      
+
       return c.json({
         success: true,
-        data: timeSeriesData
+        data: timeSeriesData,
       });
-    } catch (error) {
-      console.error('Error fetching time series data:', error);
+    }
+    catch (error) {
+      console.error("Error fetching time series data:", error);
       return c.json({
         success: false,
-        error: 'Failed to fetch time series data'
+        error: "Failed to fetch time series data",
       }, 500);
     }
-  }
+  },
 );
 
 export default app;

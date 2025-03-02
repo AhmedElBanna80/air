@@ -1,8 +1,9 @@
-import { Container } from "di-wise";
+import type { Container } from "di-wise";
+
 import { registerAirQualityService } from "./air-quality";
-import { registerLogger } from "./logger";
-import { registerDatabase } from "./db/database.provider";
 import { registerContext } from "./context";
+import { registerDatabase } from "./db/database.provider";
+import { registerLogger } from "./logger";
 
 export function registerServices(container: Container) {
   registerAirQualityService(container);

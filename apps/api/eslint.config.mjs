@@ -6,5 +6,9 @@ export default createConfig({
   plugins: { drizzle },
   rules: {
     ...drizzle.configs.recommended.rules,
+    "unicorn/filename-case": ["error", {
+      case: "kebabCase",
+      ignore: ["README.md", "src/services/db/migrations/*"],
+    }],
   },
 });

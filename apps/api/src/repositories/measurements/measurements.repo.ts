@@ -1,13 +1,14 @@
-import { DataBaseType } from '@/api/services/db/database.provider.js';
-
+import { inject, Injectable } from "di-wise";
 import { and, between, sql } from "drizzle-orm";
 
-import { DataBase } from '@/api/services/db/database.provider.js';
-import { airQualityMeasurements } from "@/api/services/db/schema/air-quality.js";
-import { inject, Injectable } from "di-wise";
-import { LoggerToken } from "../../services/logger/logger.types.js";
-import { AiQualityRepo, AirQualityData, AirQualityMeasurement, AirQualityRepositoryType, AirQualityStats, BucketWidth } from "./measurements.types.js";
+import type { DataBase, DataBaseType } from "@/api/services/db/database.provider.js";
 
+import { airQualityMeasurements } from "@/api/services/db/schema/air-quality.js";
+
+import type { AirQualityData, AirQualityMeasurement, AirQualityRepositoryType, AirQualityStats, BucketWidth } from "./measurements.types.js";
+
+import { LoggerToken } from "../../services/logger/logger.types.js";
+import { AiQualityRepo } from "./measurements.types.js";
 
 // Add a mapping function to convert user-friendly values to TimescaleDB bucket values
 function mapToBucketWidth(groupBy: BucketWidth): string {
@@ -57,8 +58,8 @@ function airQualityByTimeRangeQuery(db: DataBaseType, from: Date, to: Date, grou
 
 @Injectable<AirQualityRepository>(AiQualityRepo)
 export class AirQualityRepository implements AirQualityRepositoryType {
-  private readonly db = inject(DataBase)
-  private readonly logger = inject(LoggerToken)
+  private readonly db = inject(DataBase);
+  private readonly logger = inject(LoggerToken);
 
   async insertBatch(measurements: AirQualityMeasurement[]) {
     if (measurements.length === 0) {

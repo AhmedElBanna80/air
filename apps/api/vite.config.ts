@@ -1,22 +1,21 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite'
-import { VitePluginNode } from 'vite-plugin-node';
-
+import { defineConfig } from "vite";
+import { VitePluginNode } from "vite-plugin-node";
 
 export default defineConfig({
   plugins: [VitePluginNode({
-    adapter: 'hono',
-    
+    adapter: "hono",
+
   })],
   server: {
-    port: 3030
+    port: 3030,
   },
   test: {
-    environment: 'node',
+    environment: "node",
     coverage: {
-      provider: 'v8',
-      reportsDirectory: './coverage'
+      provider: "v8",
+      reportsDirectory: "./coverage",
     },
-    include: ['**/*.test.ts']
-  }
-}) 
+    include: ["**/*.test.ts"],
+  },
+});

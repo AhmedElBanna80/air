@@ -1,6 +1,10 @@
-import { insertAirQualitySchema, selectAirQualitySchema } from "@/api/services/db/schema/air-quality";
-import { Container, Type } from "di-wise";
-import { z } from "zod";
+import type { Container } from "di-wise";
+import type { z } from "zod";
+
+import { Type } from "di-wise";
+
+import type { insertAirQualitySchema, selectAirQualitySchema } from "@/api/services/db/schema/air-quality";
+
 import { AirQualityRepository } from "./measurements.repo";
 
 export type AirQualityMeasurement = z.infer<typeof insertAirQualitySchema>;
@@ -26,15 +30,15 @@ export type AirQualityStats = {
 };
 
 export type AirQualityRepositoryType = {
-  insertBatch: (measurements: AirQualityMeasurement[]) => Promise<number>
-  queryByTimeRange: (from: Date, to: Date, groupBy: BucketWidth, limit?: number) => Promise<AirQualityStats[]>
-  getAllDataByTimeRange: (from: Date, to: Date, limit?: number) => Promise<AirQualityData[]>
-}
+  insertBatch: (measurements: AirQualityMeasurement[]) => Promise<number>;
+  queryByTimeRange: (from: Date, to: Date, groupBy: BucketWidth, limit?: number) => Promise<AirQualityStats[]>;
+  getAllDataByTimeRange: (from: Date, to: Date, limit?: number) => Promise<AirQualityData[]>;
+};
 
-export const AiQualityRepo = Type<AirQualityRepositoryType>("AirQualityRepository")
+export const AiQualityRepo = Type<AirQualityRepositoryType>("AirQualityRepository");
 
 export function registerAirQualityRepo(container: Container) {
   container.register(AiQualityRepo, {
     useClass: AirQualityRepository,
-  })
+  });
 }

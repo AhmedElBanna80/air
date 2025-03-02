@@ -3,11 +3,11 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
+    "lib": ["ESNext", "ESNext.Decorators"],
     "baseUrl": "./",
     "paths": {
       "@/api/*": ["./src/*"]
     },
-    "lib": ["ESNext", "ESNext.Decorators"],
     "typeRoots": ["./node_modules/@types", "./node_modules/@cloudflare"],
     "types": ["node"]
   }

@@ -1,7 +1,10 @@
-import env from '@/api/env';
-import { FactoryProvider } from 'di-wise';
-import pino from 'pino';
-import { Logger } from "./logger.types";
+import type { FactoryProvider } from "di-wise";
+
+import pino from "pino";
+
+import env from "@/api/env";
+
+import type { Logger } from "./logger.types";
 
 const prettyStream = ({
   colorize: true,
@@ -17,14 +20,12 @@ export class LoggerProvider implements FactoryProvider<Logger> {
       transport: {
         targets: [{
           level: env.LOG_LEVEL,
-          target: 'pino-pretty',
-          options: prettyStream
-        }]
-      }
+          target: "pino-pretty",
+          options: prettyStream,
+        }],
+      },
     });
     return logger as unknown as Logger;
   };
-
 }
 export const loggerProvider = new LoggerProvider();
-

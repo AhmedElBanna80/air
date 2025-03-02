@@ -7,10 +7,10 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: "myuser"
-      POSTGRES_PASSWORD: "mysecretpassword"
-      POSTGRES_DB: "airqualitydb"
-      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: airqualitydb
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - timescaledb-data:/var/lib/postgresql/data
     restart: unless-stopped

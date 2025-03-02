@@ -5,7 +5,6 @@ import { pinoLogger as logger } from "hono-pino";
 import { rootContainer } from "../di-container";
 import { LoggerToken } from "../services/logger/logger.types";
 
-
 export function pinoLogger() {
   return logger({
     pino: rootContainer.resolve(LoggerToken) as unknown as Logger,

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, pgTable, real, timestamp } from "drizzle-orm/pg-core";
+import { index, pgTable, real, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 export const airQualityMeasurements = pgTable(
