@@ -11,7 +11,6 @@ import type { Schema } from "./schema";
 import { LoggerToken } from "../logger";
 import { schema } from "./schema";
 
-
 function createDatabase() {
   const logger = inject(LoggerToken);
   const pool = new pkg.Pool({

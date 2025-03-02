@@ -13,6 +13,7 @@ export type AirQualityData = z.infer<typeof selectAirQualitySchema>;
 export type BucketWidth = "microsecond" | "millisecond" | "second" | "minute" | "hour" | "day" | "week" | "month" | "year" | "decade" | "century";
 
 export type AirQualityStats = {
+  avgRelativeHumidity: number;
   timestamp: string;
   avgTemperature: number;
   avgHumidity: number;

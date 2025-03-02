@@ -1,6 +1,6 @@
-import { inject, Injectable } from "di-wise";
+import { Injectable, inject } from "di-wise";
 
-import type { BucketWidth } from "@/api/repositories";
+import type { AirQualityStats, BucketWidth } from "@/api/repositories";
 
 import { AiQualityRepo, ParametersRepo } from "@/api/repositories";
 
@@ -25,118 +25,133 @@ export class AirQualityService implements AirQualityServiceType {
       // Get all parameters
       const parameters = await this.parametersRepo.getAllParameters();
 
-      // Get air quality measurements
-      const measurements = await this.airQualityRepo.queryByTimeRange(from, to, groupBy, limit);
+      // Create a map for easier lookup
+      const parameterMap = new Map();
+      for (const param of parameters) {
+        parameterMap.set(param.name, param);
+      }
 
-      // Map parameter data to time series
-      const parameterMap = new Map(
-        parameters.map(param => [param.name, {
-          id: param.id,
-          name: param.name,
-          display_name: param.display_name,
-          unit: param.unit,
-          min_safe_value: param.min_safe_value,
-          max_safe_value: param.max_safe_value,
-        }]),
+      // Get measurements within the time range
+      const measurements = await this.airQualityRepo.queryByTimeRange(
+        from,
+        to,
+        groupBy,
+        limit
       );
 
+      // Default empty response structure
       const timeSeriesData: TimeSeriesData = {
         from,
         to,
         groupBy,
         parameters: [],
         environmentalData: {
-          temperature: { series: [] },
-          relativeHumidity: { series: [] },
-          absoluteHumidity: { series: [] },
+          temperature: {
+            series: [],
+          },
+          relativeHumidity: {
+            series: [],
+          },
+          absoluteHumidity: {
+            series: [],
+          },
         },
       };
 
-      // Map measurements to parameter time series
-      if (measurements.length > 0) {
-        // Map environmental data
-        measurements.forEach((measurement) => {
-          timeSeriesData.environmentalData.temperature.series.push({
-            timestamp: measurement.timestamp.toString(),
-            value: measurement.avgTemperature,
-          });
+      // If we have measurements, process them
+      if (measurements && measurements.length > 0) {
+        // Process temperature data
+        timeSeriesData.environmentalData.temperature.series = measurements.map((m: AirQualityStats) => ({
+          timestamp: m.timestamp.toString(),
+          value: m.avgTemperature,
+        }));
 
-          timeSeriesData.environmentalData.relativeHumidity.series.push({
-            timestamp: measurement.timestamp.toString(),
-            value: measurement.avgHumidity,
-          });
+        // Process relative humidity data
+        timeSeriesData.environmentalData.relativeHumidity.series = measurements.map((m: AirQualityStats) => ({
+          timestamp: m.timestamp.toString(),
+          value: m.avgRelativeHumidity || m.avgHumidity,
+        }));
 
-          timeSeriesData.environmentalData.absoluteHumidity.series.push({
-            timestamp: measurement.timestamp.toString(),
-            value: measurement.avgAbsoluteHumidity,
-          });
-        });
+        // Process absolute humidity data
+        timeSeriesData.environmentalData.absoluteHumidity.series = measurements.map((m: AirQualityStats) => ({
+          timestamp: m.timestamp.toString(),
+          value: m.avgAbsoluteHumidity,
+        }));
 
-        // Create parameter time series
+        // Process air quality parameters
         // CO
         if (parameterMap.has("co")) {
-          const coParam = parameterMap.get("co")!;
-          timeSeriesData.parameters.push({
-            parameter: coParam,
-            series: measurements.map(m => ({
-              timestamp: m.timestamp.toString(),
-              value: m.avgCoGt,
-            })),
-          });
+          const coParam = parameterMap.get("co");
+          if (coParam) {
+            timeSeriesData.parameters.push({
+              parameter: coParam,
+              series: measurements.map((m: AirQualityStats) => ({
+                timestamp: m.timestamp.toString(),
+                value: m.avgCoGt,
+              })),
+            });
+          }
         }
 
         // NMHC
         if (parameterMap.has("nmhc")) {
-          const nmhcParam = parameterMap.get("nmhc")!;
-          timeSeriesData.parameters.push({
-            parameter: nmhcParam,
-            series: measurements.map(m => ({
-              timestamp: m.timestamp.toString(),
-              value: m.avgNmhcGt,
-            })),
-          });
+          const nmhcParam = parameterMap.get("nmhc");
+          if (nmhcParam) {
+            timeSeriesData.parameters.push({
+              parameter: nmhcParam,
+              series: measurements.map((m: AirQualityStats) => ({
+                timestamp: m.timestamp.toString(),
+                value: m.avgNmhcGt,
+              })),
+            });
+          }
         }
 
         // Benzene
         if (parameterMap.has("benzene")) {
-          const benzeneParam = parameterMap.get("benzene")!;
-          timeSeriesData.parameters.push({
-            parameter: benzeneParam,
-            series: measurements.map(m => ({
-              timestamp: m.timestamp.toString(),
-              value: m.avgBenzeneGt,
-            })),
-          });
+          const benzeneParam = parameterMap.get("benzene");
+          if (benzeneParam) {
+            timeSeriesData.parameters.push({
+              parameter: benzeneParam,
+              series: measurements.map((m: AirQualityStats) => ({
+                timestamp: m.timestamp.toString(),
+                value: m.avgBenzeneGt,
+              })),
+            });
+          }
         }
 
         // NOx
         if (parameterMap.has("nox")) {
-          const noxParam = parameterMap.get("nox")!;
-          timeSeriesData.parameters.push({
-            parameter: noxParam,
-            series: measurements.map(m => ({
-              timestamp: m.timestamp.toString(),
-              value: m.avgNOxGt,
-            })),
-          });
+          const noxParam = parameterMap.get("nox");
+          if (noxParam) {
+            timeSeriesData.parameters.push({
+              parameter: noxParam,
+              series: measurements.map((m: any) => ({
+                timestamp: m.timestamp.toString(),
+                value: m.avgNoxGt,
+              })),
+            });
+          }
         }
 
         // NO2
         if (parameterMap.has("no2")) {
-          const no2Param = parameterMap.get("no2")!;
-          timeSeriesData.parameters.push({
-            parameter: no2Param,
-            series: measurements.map(m => ({
-              timestamp: m.timestamp.toString(),
-              value: m.avgNo2Gt,
-            })),
-          });
+          const no2Param = parameterMap.get("no2");
+          if (no2Param) {
+            timeSeriesData.parameters.push({
+              parameter: no2Param,
+              series: measurements.map((m: AirQualityStats) => ({
+                timestamp: m.timestamp.toString(),
+                value: m.avgNo2Gt,
+              })),
+            });
+          }
         }
       }
 
       return timeSeriesData;
-    }
-    catch (error) {
+    } catch (error) {
       this.logger.error("Error fetching time series data:", error);
       throw error;
     }
