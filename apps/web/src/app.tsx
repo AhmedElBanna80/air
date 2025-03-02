@@ -1,23 +1,36 @@
-import { useSession } from "@hono/auth-js/react";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
+import logo from "./logo.svg";
 
-import { routeTree } from "@/web/route-tree.gen";
-
-const router = createRouter({
-  routeTree,
-  context: {
-    session: undefined,
-  },
-});
-
-declare module "@tanstack/react-router" {
-  // eslint-disable-next-line ts/consistent-type-definitions
-  interface Register {
-    router: typeof router;
-  }
+function App() {
+	return (
+		<div className="text-center">
+			<header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
+				<img
+					src={logo}
+					className="h-[40vmin] pointer-events-none animate-[spin_20s_linear_infinite]"
+					alt="logo"
+				/>
+				<p>
+					Edit <code>src/App.tsx</code> and save to reload.
+				</p>
+				<a
+					className="text-[#61dafb] hover:underline"
+					href="https://reactjs.org"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Learn React
+				</a>
+				<a
+					className="text-[#61dafb] hover:underline"
+					href="https://tanstack.com"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Learn TanStack
+				</a>
+			</header>
+		</div>
+	);
 }
 
-export default function App() {
-  const session = useSession();
-  return <RouterProvider router={router} context={{ session }} />;
-}
+export default App;
