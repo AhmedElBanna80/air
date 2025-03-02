@@ -8,7 +8,6 @@ export default function Header() {
 					<Link to="/">Home</Link>
 				</div>
 			</nav>
-			<div></div>
 		</header>
 	);
 }

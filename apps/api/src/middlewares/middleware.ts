@@ -1,5 +1,7 @@
-import type { Container, Token, Type } from "di-wise";
+import type { Container, Token } from "di-wise";
 import type { Context, Hono } from "hono";
+
+import { Type } from "di-wise";
 
 import type { AppEnv } from "@/api/services/context";
 

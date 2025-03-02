@@ -1,35 +1,46 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-	Outlet,
 	RouterProvider,
 	createRootRoute,
 	createRoute,
-	createRouter,
+	createRouter
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
-import "./styles.css";
 import reportWebVitals from "./reportWebVitals.ts";
+import "./styles.css";
 
-import App from "./App.tsx";
+import { RootComponent } from "./routes/_root.tsx";
+import { ChartsPage } from "./routes/charts.tsx";
+import { IndexPage } from "./routes/index.tsx";
+import { UploadPage } from "./routes/upload.tsx";
+
+const queryClient = new QueryClient();
 
 const rootRoute = createRootRoute({
-	component: () => (
-		<>
-			<Outlet />
-			<TanStackRouterDevtools />
-		</>
-	),
+	component: RootComponent,
 });
 
 const indexRoute = createRoute({
 	getParentRoute: () => rootRoute,
 	path: "/",
-	component: App,
+	component: IndexPage,
 });
 
-const routeTree = rootRoute.addChildren([indexRoute]);
+const uploadRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/upload",
+	component: UploadPage,
+});
+
+const chartsRoute = createRoute({
+	getParentRoute: () => rootRoute,
+	path: "/charts",
+	component: ChartsPage
+})
+
+const routeTree = rootRoute.addChildren([indexRoute, uploadRoute, chartsRoute]);
 
 const router = createRouter({
 	routeTree,
@@ -49,7 +60,9 @@ if (rootElement && !rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
 	root.render(
 		<StrictMode>
-			<RouterProvider router={router} />
+			<QueryClientProvider client={queryClient}>
+				<RouterProvider router={router} />
+			</QueryClientProvider>
 		</StrictMode>,
 	);
 }

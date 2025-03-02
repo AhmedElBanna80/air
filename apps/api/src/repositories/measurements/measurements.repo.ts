@@ -1,7 +1,7 @@
 import { inject, Injectable } from "di-wise";
 import { and, between, sql } from "drizzle-orm";
 
-import type { DataBase, DataBaseType } from "@/api/services/db/database.provider.js";
+import { DataBase, DataBaseType } from "@/api/services/db/database.provider.js";
 
 import { airQualityMeasurements } from "@/api/services/db/schema/air-quality.js";
 
