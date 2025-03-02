@@ -16,69 +16,79 @@ import { cn } from '../lib/utils';
 export function RootComponent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Close sidebar when clicking outside on mobile
+  // Handle clicks outside the sidebar to close it on mobile
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
-      if (sidebarOpen && window.innerWidth < 1024) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && !sidebar.contains(event.target as Node)) {
-          setSidebarOpen(false);
-        }
+      const sidebar = document.getElementById("sidebar");
+      if (
+        sidebar &&
+        !sidebar.contains(event.target as Node) &&
+        window.innerWidth < 1024 &&
+        sidebarOpen
+      ) {
+        setSidebarOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
   }, [sidebarOpen]);
 
-  // Close sidebar when window resizes to larger viewport
+  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        setSidebarOpen(true);
+        setSidebarOpen(false);
       }
     };
 
-    // Set initial state based on viewport size
-    handleResize();
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return (
-    <div className="min-h-screen flex">
-      {/* Mobile sidebar backdrop */}
-      {sidebarOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+    <div className="flex h-screen bg-background">
+      {/* Mobile backdrop */}
+      <div 
+        className={`fixed inset-0 bg-black/50 transition-opacity lg:hidden z-10 ${
+          sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setSidebarOpen(false)}
+        onKeyDown={(e) => e.key === 'Escape' && setSidebarOpen(false)}
+        tabIndex={0}
+        role="button"
+        aria-label="Close menu"
+      />
 
       {/* Sidebar */}
-      <div 
+      <div
         id="sidebar"
-        className={cn(
-          "fixed lg:static left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border z-40",
-          "transition-transform duration-300 ease-in-out",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        )}
+        className={`fixed inset-y-0 left-0 z-20 w-64 transform transition-transform duration-200 ease-in-out bg-sidebar overflow-y-auto lg:translate-x-0 lg:static lg:inset-auto ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
-        <div className="p-6 flex justify-between items-center">
-          <div className="flex items-center gap-2">
+        <div className="h-16 border-b border-sidebar-border flex items-center px-6">
+          <Link to="/" className="flex items-center space-x-2">
             <BarChart3Icon className="h-6 w-6 text-sidebar-foreground" />
-            <h1 className="text-xl font-bold text-sidebar-foreground">Air Quality Analysis</h1>
-          </div>
+            <span className="font-bold text-xl text-sidebar-foreground">Air Quality Analysis</span>
+          </Link>
           <Button 
             variant="ghost" 
-            size="icon"
-            className="lg:hidden"
+            size="icon" 
+            className="lg:hidden absolute top-4 right-4"
             onClick={() => setSidebarOpen(false)}
+            onKeyDown={(e) => e.key === 'Enter' && setSidebarOpen(false)}
+            aria-label="Close menu"
           >
             <X className="h-5 w-5" />
           </Button>
         </div>
+
+        {/* Navigation */}
         <nav className="mt-6 px-4 space-y-1">
           <Link
             to="/"
@@ -136,14 +146,15 @@ export function RootComponent() {
       </div>
 
       {/* Main content area */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col w-full">
         {/* Header */}
-        <header className="h-16 border-b flex items-center justify-between px-6">
+        <header className="h-16 border-b flex items-center justify-between px-4 sm:px-6">
           <Button 
             variant="ghost" 
             size="icon"
             className="lg:hidden"
             onClick={() => setSidebarOpen(true)}
+            onKeyDown={(e) => e.key === 'Enter' && setSidebarOpen(true)}
             aria-label="Open menu"
           >
             <MenuIcon className="h-5 w-5" />
@@ -154,7 +165,7 @@ export function RootComponent() {
         </header>
 
         {/* Main content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 w-full overflow-y-auto">
           <Outlet />
         </main>
       </div>

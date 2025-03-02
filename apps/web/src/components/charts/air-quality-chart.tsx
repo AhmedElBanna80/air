@@ -221,7 +221,7 @@ export default function AirQualityChart({
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="w-full space-y-6">
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 				<div className="md:col-span-3">
 					<ResponsiveContainer width="100%" height={400}>

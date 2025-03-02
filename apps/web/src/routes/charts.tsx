@@ -28,14 +28,6 @@ import {
 import { fetchTimeSeriesData } from "../lib/api";
 
 
-const predefinedTimeRanges = [
-	{ label: "Last 24 Hours", value: "24h" },
-	{ label: "Last 7 Days", value: "7d" },
-	{ label: "Last 30 Days", value: "30d" },
-	{ label: "Last 90 Days", value: "90d" },
-	{ label: "Custom Range", value: "custom" },
-];
-
 const groupByOptions = [
 	{ label: "Minute", value: "minute" },
 	{ label: "Hour", value: "hour" },
@@ -45,38 +37,15 @@ const groupByOptions = [
 ];
 
 // Move the getDateRange function outside the component
-const calculateDateRange = (currentTimeRange: string, customFromDate: string, customToDate: string) => {
-	const now = new Date();
-	const from = new Date(now); // Clone the date to avoid mutation issues
-	
-	switch (currentTimeRange) {
-		case "24h":
-			from.setHours(from.getHours() - 24);
-			break;
-		case "7d":
-			from.setDate(from.getDate() - 7);
-			break;
-		case "30d":
-			from.setDate(from.getDate() - 30);
-			break;
-		case "90d":
-			from.setDate(from.getDate() - 90);
-			break;
-		case "custom":
-			return {
-				from: new Date(customFromDate),
-				to: new Date(customToDate),
-			};
-		default:
-			from.setDate(from.getDate() - 7);
-	}
-
-	return { from, to: now };
+const calculateDateRange = (customFromDate: string, customToDate: string) => {
+	return {
+		from: new Date(customFromDate),
+		to: new Date(customToDate),
+	};
 };
 
 export function ChartsPage() {
 	const [activeTab, setActiveTab] = useState("time-series");
-	const [timeRange, setTimeRange] = useState("7d");
 	const [groupBy, setGroupBy] = useState("hour");
 	
 	// Ensure dates are initialized correctly
@@ -91,8 +60,8 @@ export function ChartsPage() {
 
 	// Use useMemo to prevent recalculating on every render
 	const dateRange = useMemo(
-		() => calculateDateRange(timeRange, customRange.from, customRange.to), 
-		[timeRange, customRange.from, customRange.to]
+		() => calculateDateRange(customRange.from, customRange.to), 
+		[customRange.from, customRange.to]
 	);
 	
 	// Log the actual date range being used (for debugging)
@@ -127,11 +96,6 @@ export function ChartsPage() {
 		}
 	}, [data, isLoading, isError, error]);
 
-	// Handle time range change
-	const handleTimeRangeChange = (value: string) => {
-		setTimeRange(value);
-	};
-
 	// Handle custom date change
 	const handleCustomDateChange = (field: "from" | "to", value: string) => {
 		setCustomRange((prev) => ({
@@ -141,7 +105,7 @@ export function ChartsPage() {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className="w-full space-y-6">
 			<div className="flex justify-between items-center">
 				<h1 className="text-2xl font-bold tracking-tight">
 					Air Quality Charts
@@ -162,7 +126,7 @@ export function ChartsPage() {
 					<TabsTrigger value="comparison">Parameter Comparison</TabsTrigger>
 				</TabsList>
 
-				<Card className="mt-6">
+				<Card className="mt-6 w-full">
 					<CardHeader>
 						<CardTitle>Chart Settings</CardTitle>
 						<CardDescription>Configure your chart view</CardDescription>
@@ -170,47 +134,27 @@ export function ChartsPage() {
 					<CardContent>
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 							<div className="space-y-2">
-								<Label htmlFor="time-range">Time Range</Label>
-								<Select value={timeRange} onValueChange={handleTimeRangeChange}>
-									<SelectTrigger id="time-range">
-										<SelectValue placeholder="Select time range" />
-									</SelectTrigger>
-									<SelectContent>
-										{predefinedTimeRanges.map((range) => (
-											<SelectItem key={range.value} value={range.value}>
-												{range.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+								<Label htmlFor="date-from">From</Label>
+								<Input
+									id="date-from"
+									type="date"
+									value={customRange.from}
+									onChange={(e) =>
+										handleCustomDateChange("from", e.target.value)
+									}
+								/>
 							</div>
-
-							{timeRange === "custom" && (
-								<>
-									<div className="space-y-2">
-										<Label htmlFor="date-from">From</Label>
-										<Input
-											id="date-from"
-											type="date"
-											value={customRange.from}
-											onChange={(e) =>
-												handleCustomDateChange("from", e.target.value)
-											}
-										/>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="date-to">To</Label>
-										<Input
-											id="date-to"
-											type="date"
-											value={customRange.to}
-											onChange={(e) =>
-												handleCustomDateChange("to", e.target.value)
-											}
-										/>
-									</div>
-								</>
-							)}
+							<div className="space-y-2">
+								<Label htmlFor="date-to">To</Label>
+								<Input
+									id="date-to"
+									type="date"
+									value={customRange.to}
+									onChange={(e) =>
+										handleCustomDateChange("to", e.target.value)
+									}
+								/>
+							</div>
 
 							<div className="space-y-2">
 								<Label htmlFor="group-by">Group By</Label>
@@ -228,11 +172,21 @@ export function ChartsPage() {
 								</Select>
 							</div>
 						</div>
+						
+						<div className="mt-4 flex justify-end">
+							<Button 
+								variant="default" 
+								size="sm" 
+								onClick={() => refetch()}
+							>
+								Apply Date Range
+							</Button>
+						</div>
 					</CardContent>
 				</Card>
 
 				<TabsContent value="time-series" className="mt-6">
-					<Card>
+					<Card className="w-full">
 						<CardHeader>
 							<CardTitle>Air Quality Time Series</CardTitle>
 							<CardDescription>
@@ -270,7 +224,7 @@ export function ChartsPage() {
 				</TabsContent>
 
 				<TabsContent value="comparison" className="mt-6">
-					<Card>
+					<Card className="w-full">
 						<CardHeader>
 							<CardTitle>Parameter Comparison</CardTitle>
 							<CardDescription>
