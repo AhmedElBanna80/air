@@ -4,6 +4,8 @@ import { Link, Outlet } from '@tanstack/react-router';
 import {
     BarChart3Icon,
     CalendarIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
     HomeIcon,
     MenuIcon,
     SettingsIcon,
@@ -15,6 +17,13 @@ import { cn } from '../lib/utils';
 
 export function RootComponent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile on initial render
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 1024);
+  }, []);
 
   // Handle clicks outside the sidebar to close it on mobile
   useEffect(() => {
@@ -23,7 +32,7 @@ export function RootComponent() {
       if (
         sidebar &&
         !sidebar.contains(event.target as Node) &&
-        window.innerWidth < 1024 &&
+        isMobile &&
         sidebarOpen
       ) {
         setSidebarOpen(false);
@@ -34,12 +43,16 @@ export function RootComponent() {
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [sidebarOpen]);
+  }, [sidebarOpen, isMobile]);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      
+      if (mobile) {
+        // On mobile, close the sidebar
         setSidebarOpen(false);
       }
     };
@@ -49,6 +62,18 @@ export function RootComponent() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  // Toggle sidebar on desktop
+  const toggleSidebar = () => {
+    if (isMobile) {
+      setSidebarOpen(!sidebarOpen);
+    } else {
+      setSidebarCollapsed(!sidebarCollapsed);
+    }
+  };
+
+  // Determine if sidebar should be visible
+  const isSidebarVisible = isMobile ? sidebarOpen : !sidebarCollapsed;
 
   return (
     <div className="flex h-screen bg-background">
@@ -67,41 +92,51 @@ export function RootComponent() {
       {/* Sidebar */}
       <div
         id="sidebar"
-        className={`fixed inset-y-0 left-0 z-20 w-64 transform transition-transform duration-200 ease-in-out bg-sidebar overflow-y-auto lg:translate-x-0 lg:static lg:inset-auto ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-20 transform transition-all duration-200 ease-in-out bg-sidebar overflow-y-auto ${
+          isMobile 
+            ? sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64' 
+            : sidebarCollapsed ? 'w-16' : 'w-64'
+        } ${isMobile ? '' : 'relative'}`}
       >
-        <div className="h-16 border-b border-sidebar-border flex items-center px-6">
-          <Link to="/" className="flex items-center space-x-2">
+        <div className={`h-16 border-b border-sidebar-border flex items-center ${sidebarCollapsed && !isMobile ? 'justify-center' : 'px-6'}`}>
+          {(!sidebarCollapsed || isMobile) && (
+            <Link to="/" className="flex items-center space-x-2">
+              <BarChart3Icon className="h-6 w-6 text-sidebar-foreground" />
+              <span className="font-bold text-xl text-sidebar-foreground">Air Quality</span>
+            </Link>
+          )}
+          {sidebarCollapsed && !isMobile && (
             <BarChart3Icon className="h-6 w-6 text-sidebar-foreground" />
-            <span className="font-bold text-xl text-sidebar-foreground">Air Quality Analysis</span>
-          </Link>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="lg:hidden absolute top-4 right-4"
-            onClick={() => setSidebarOpen(false)}
-            onKeyDown={(e) => e.key === 'Enter' && setSidebarOpen(false)}
-            aria-label="Close menu"
-          >
-            <X className="h-5 w-5" />
-          </Button>
+          )}
+          {isMobile && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute top-4 right-4"
+              onClick={() => setSidebarOpen(false)}
+              onKeyDown={(e) => e.key === 'Enter' && setSidebarOpen(false)}
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          )}
         </div>
 
         {/* Navigation */}
-        <nav className="mt-6 px-4 space-y-1">
+        <nav className={`mt-6 ${sidebarCollapsed && !isMobile ? 'px-2' : 'px-4'} space-y-1`}>
           <Link
             to="/"
             activeProps={{
               className: 'bg-sidebar-accent text-sidebar-accent-foreground',
             }}
             className={cn(
-              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+              sidebarCollapsed && !isMobile && "justify-center px-2"
             )}
-            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+            onClick={() => isMobile && setSidebarOpen(false)}
           >
-            <HomeIcon className="mr-3 h-5 w-5" />
-            Dashboard
+            <HomeIcon className={cn("h-5 w-5", !sidebarCollapsed || isMobile ? "mr-3" : "")} />
+            {(!sidebarCollapsed || isMobile) && "Dashboard"}
           </Link>
           <Link
             to="/charts"
@@ -109,12 +144,13 @@ export function RootComponent() {
               className: 'bg-sidebar-accent text-sidebar-accent-foreground',
             }}
             className={cn(
-              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+              sidebarCollapsed && !isMobile && "justify-center px-2"
             )}
-            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+            onClick={() => isMobile && setSidebarOpen(false)}
           >
-            <BarChart3Icon className="mr-3 h-5 w-5" />
-            Charts
+            <BarChart3Icon className={cn("h-5 w-5", !sidebarCollapsed || isMobile ? "mr-3" : "")} />
+            {(!sidebarCollapsed || isMobile) && "Charts"}
           </Link>
           <Link
             to="/date-range"
@@ -122,12 +158,13 @@ export function RootComponent() {
               className: 'bg-sidebar-accent text-sidebar-accent-foreground',
             }}
             className={cn(
-              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+              sidebarCollapsed && !isMobile && "justify-center px-2"
             )}
-            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+            onClick={() => isMobile && setSidebarOpen(false)}
           >
-            <CalendarIcon className="mr-3 h-5 w-5" />
-            Date Range
+            <CalendarIcon className={cn("h-5 w-5", !sidebarCollapsed || isMobile ? "mr-3" : "")} />
+            {(!sidebarCollapsed || isMobile) && "Date Range"}
           </Link>
           <Link
             to="/settings"
@@ -135,14 +172,37 @@ export function RootComponent() {
               className: 'bg-sidebar-accent text-sidebar-accent-foreground',
             }}
             className={cn(
-              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+              sidebarCollapsed && !isMobile && "justify-center px-2"
             )}
-            onClick={() => window.innerWidth < 1024 && setSidebarOpen(false)}
+            onClick={() => isMobile && setSidebarOpen(false)}
           >
-            <SettingsIcon className="mr-3 h-5 w-5" />
-            Settings
+            <SettingsIcon className={cn("h-5 w-5", !sidebarCollapsed || isMobile ? "mr-3" : "")} />
+            {(!sidebarCollapsed || isMobile) && "Settings"}
           </Link>
         </nav>
+
+        {/* Collapse toggle for desktop */}
+        {!isMobile && (
+          <div className={cn(
+            "absolute bottom-4",
+            sidebarCollapsed ? "right-1/2 translate-x-1/2" : "right-4"
+          )}>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              onKeyDown={(e) => e.key === 'Enter' && setSidebarCollapsed(!sidebarCollapsed)}
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              className={cn(
+                "flex items-center p-3 rounded-lg bg-sidebar-accent bg-opacity-10 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
+                sidebarCollapsed && "justify-center w-10 h-10 p-0"
+              )}
+            >
+              {sidebarCollapsed ? <ChevronRightIcon className="h-5 w-5" /> : <ChevronLeftIcon className="h-5 w-5" />}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Main content area */}
@@ -152,10 +212,13 @@ export function RootComponent() {
           <Button 
             variant="ghost" 
             size="icon"
-            className="lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-            onKeyDown={(e) => e.key === 'Enter' && setSidebarOpen(true)}
-            aria-label="Open menu"
+            onClick={toggleSidebar}
+            onKeyDown={(e) => e.key === 'Enter' && toggleSidebar()}
+            aria-label={isMobile 
+              ? "Open menu" 
+              : sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+            }
+            className={!isMobile && !sidebarCollapsed ? "invisible" : ""}
           >
             <MenuIcon className="h-5 w-5" />
           </Button>

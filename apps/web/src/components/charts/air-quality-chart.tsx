@@ -221,105 +221,103 @@ export default function AirQualityChart({
 	}
 
 	return (
-		<div className="w-full space-y-6">
-			<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-				<div className="md:col-span-3">
-					<ResponsiveContainer width="100%" height={400}>
-						<LineChart
-							data={chartData}
-							margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
-						>
-							<CartesianGrid strokeDasharray="3 3" />
-							<XAxis
-								dataKey="timestamp"
-								tick={{ fontSize: 12 }}
-								angle={-45}
-								textAnchor="end"
-								height={60}
-							/>
-							<YAxis />
-							<Tooltip content={<CustomTooltip />} />
-							<Legend />
+		<div className="w-full h-full flex flex-col lg:flex-row gap-4">
+			<div className="flex-1 h-full min-h-[400px]">
+				<ResponsiveContainer width="100%" height="100%">
+					<LineChart
+						data={chartData}
+						margin={{ top: 5, right: 30, left: 20, bottom: 25 }}
+					>
+						<CartesianGrid strokeDasharray="3 3" />
+						<XAxis
+							dataKey="timestamp"
+							tick={{ fontSize: 12 }}
+							angle={-45}
+							textAnchor="end"
+							height={60}
+						/>
+						<YAxis />
+						<Tooltip content={<CustomTooltip />} />
+						<Legend />
 
-							{/* Generate lines for selected parameters */}
-							{selectedParameters.map((param) => {
-								// Find the parameter metadata for the current parameter
-								const parameterMetadata = data?.parameters.find(
-									(p: { parameter: { name: string; }; }) => p.parameter.name === param,
-								)?.parameter;
+						{/* Generate lines for selected parameters */}
+						{selectedParameters.map((param) => {
+							// Find the parameter metadata for the current parameter
+							const parameterMetadata = data?.parameters.find(
+								(p: { parameter: { name: string; }; }) => p.parameter.name === param,
+							)?.parameter;
 
-								const displayName = parameterMetadata
-									? `${parameterMetadata.display_name} (${parameterMetadata.unit})`
-									: param === "temperature"
-										? "Temperature (°C)"
-										: param === "relativeHumidity"
-											? "Relative Humidity (%)"
-											: param === "absoluteHumidity"
-												? "Absolute Humidity (g/m³)"
-												: param;
+							const displayName = parameterMetadata
+								? `${parameterMetadata.display_name} (${parameterMetadata.unit})`
+								: param === "temperature"
+									? "Temperature (°C)"
+									: param === "relativeHumidity"
+										? "Relative Humidity (%)"
+										: param === "absoluteHumidity"
+											? "Absolute Humidity (g/m³)"
+											: param;
 
-								return (
-									<Line
-										key={param}
-										type="monotone"
-										dataKey={param}
-										name={displayName}
-										stroke={COLORS[param as keyof typeof COLORS] || "#000000"}
-										activeDot={{ r: 8 }}
-										dot={false}
+							return (
+								<Line
+									key={param}
+									type="monotone"
+									dataKey={param}
+									name={displayName}
+									stroke={COLORS[param as keyof typeof COLORS] || "#000000"}
+									activeDot={{ r: 8 }}
+									dot={false}
+								/>
+							);
+						})}
+					</LineChart>
+				</ResponsiveContainer>
+			</div>
+
+			<div className="lg:w-60 shrink-0">
+				<h3 className="text-lg font-medium mb-3">Parameters</h3>
+				<ScrollArea className="h-[calc(100%-2rem)] lg:h-[300px] rounded-md border p-4">
+					<div className="space-y-4">
+						{availableParameters.map((param) => {
+							// Find parameter metadata
+							const parameterMetadata = data?.parameters.find(
+								(p: { parameter: { name: string; }; }) => p.parameter.name === param,
+							)?.parameter;
+
+							const displayName = parameterMetadata
+								? parameterMetadata.display_name
+								: param === "temperature"
+									? "Temperature"
+									: param === "relativeHumidity"
+										? "Relative Humidity"
+										: param === "absoluteHumidity"
+											? "Absolute Humidity"
+											: param;
+
+							return (
+								<div key={param} className="flex items-center space-x-2">
+									<Checkbox
+										id={`param-${param}`}
+										checked={selectedParameters.includes(param)}
+										onCheckedChange={() => handleParameterChange(param)}
 									/>
-								);
-							})}
-						</LineChart>
-					</ResponsiveContainer>
-				</div>
-
-				<div className="flex flex-col">
-					<h3 className="text-lg font-medium mb-3">Parameters</h3>
-					<ScrollArea className="h-64 rounded-md border p-4">
-						<div className="space-y-4">
-							{availableParameters.map((param) => {
-								// Find parameter metadata
-								const parameterMetadata = data?.parameters.find(
-									(p: { parameter: { name: string; }; }) => p.parameter.name === param,
-								)?.parameter;
-
-								const displayName = parameterMetadata
-									? parameterMetadata.display_name
-									: param === "temperature"
-										? "Temperature"
-										: param === "relativeHumidity"
-											? "Relative Humidity"
-											: param === "absoluteHumidity"
-												? "Absolute Humidity"
-												: param;
-
-								return (
-									<div key={param} className="flex items-center space-x-2">
-										<Checkbox
-											id={`param-${param}`}
-											checked={selectedParameters.includes(param)}
-											onCheckedChange={() => handleParameterChange(param)}
+									<Label
+										htmlFor={`param-${param}`}
+										className="flex items-center"
+									>
+										<div
+											className="w-3 h-3 mr-2"
+											style={{
+												backgroundColor:
+													COLORS[param as keyof typeof COLORS] || "#000000",
+											}}
 										/>
-										<Label
-											htmlFor={`param-${param}`}
-											className="flex items-center"
-										>
-											<div
-												className="w-3 h-3 mr-2"
-												style={{
-													backgroundColor:
-														COLORS[param as keyof typeof COLORS] || "#000000",
-												}}
-											/>
-											{displayName}
-										</Label>
-									</div>
-								);
-							})}
-						</div>
-					</ScrollArea>
-				</div>
+										{displayName}
+									</Label>
+								</div>
+							);
+						})}
+					</div>
+				</ScrollArea>
 			</div>
 		</div>
 	);
