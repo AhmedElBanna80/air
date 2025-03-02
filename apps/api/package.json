@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx --watch src/app.ts",
     "start": "tsx app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
@@ -16,8 +18,10 @@
     "@types/node": "^22.10.2",
     "@types/pg": "^8.11.11",
     "@types/pg-copy-streams": "^1.2.5",
+    "@vitest/coverage-c8": "^0.33.0",
     "tsx": "^4.19.3",
-    "typescript": "~5.7.2"
+    "typescript": "~5.7.2",
+    "vitest": "^3.0.7"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
