@@ -29,7 +29,11 @@ const EnvSchema = z.object({
   POSTGRES_USER: z.string(),
   POSTGRES_PASSWORD: z.string(),
   POSTGRES_DB: z.string(),
+  POSTGRES_HOST: z.string(),
+  POSTGRES_PORT: z.coerce.number(),
 });
+
+export type EnvType = z.infer<typeof EnvSchema>;
 
 const env = EnvSchema.parse(process.env);
 

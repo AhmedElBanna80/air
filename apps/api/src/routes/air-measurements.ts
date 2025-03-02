@@ -1,6 +1,11 @@
 import { Hono } from 'hono';
+import { stream, } from 'hono/streaming';
+import * as ndjson from 'ndjson';
+import { Transform } from 'stream';
 import { z } from 'zod';
 import { Validator } from '../lib/validator';
+import { inject } from '../middlewares/middleware';
+import { AiQualityRepo } from '../repositories';
 
 
 // Define schemas
@@ -34,26 +39,38 @@ const uploadSchema = z.object({
   file: z.custom<File>(val => val instanceof File),
 });
 
-const app = new Hono<{ Bindings: { 
-} }>()
+const app = new Hono<{
+  Bindings: {
+  }
+}>()
+
+
+
 
 // GET endpoint with query validation
 app.get(
   '/air-measurements',
   Validator('query', querySchema),
-  (c) => {
+  async (c) => {
     const { from, to, groupBy, limit } = c.req.valid('query')
-    // Implement your measurement logic here
-    return c.json({
-      success: true,
-      data: {
-        from,
-        to,
-        groupBy,
-        limit,
-        measurements: [] // Add actual measurements
+    const db = inject(c, AiQualityRepo)
+    
+    // Set content type to NDJSON
+    c.header('Content-Type', 'application/x-ndjson');
+    
+    return stream(c, async (honoStream) => {
+      try {
+        const dbStream = await db.queryByTimeRange(from, to, groupBy, limit);
+        for (const row of dbStream) {
+          honoStream.write(JSON.stringify(row) + '\n');
+        }
+        honoStream.close();
+      } catch (err) {
+        console.error('Stream setup error:', err);
+        honoStream.write(JSON.stringify({ error: 'Stream error' }) + '\n');
+        honoStream.close();
       }
-    })
+    });
   }
 )
 
@@ -63,7 +80,7 @@ app.post(
   async (c) => {
     const formData = await c.req.formData()
     const file = formData.get('file')
-    
+
     // Validate upload
     const result = uploadSchema.safeParse({ file })
     if (!result.success) {
@@ -72,17 +89,18 @@ app.post(
 
     // Handle file storage (example using Cloudflare R2)
     try {
-      return c.json({ 
-        success: true, 
-        message: 'File uploaded successfully' 
+      return c.json({
+        success: true,
+        message: 'File uploaded successfully'
       })
     } catch (error) {
-      return c.json({ 
-        error: 'File upload failed' 
+      return c.json({
+        error: 'File upload failed'
       }, 500)
     }
   }
 )
+
 
 export type AppType = typeof app
 export default app 
