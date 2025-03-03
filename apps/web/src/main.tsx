@@ -41,35 +41,10 @@ const chartsRoute = createRoute({
 	component: ChartsPage
 })
 
-// Placeholder Routes for Date Range and Settings
-const dateRangeRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/date-range",
-	component: () => (
-		<div className="p-6">
-			<h1 className="text-2xl font-bold">Date Range</h1>
-			<p className="mt-4">Date range filtering functionality coming soon.</p>
-		</div>
-	)
-});
-
-const settingsRoute = createRoute({
-	getParentRoute: () => rootRoute,
-	path: "/settings",
-	component: () => (
-		<div className="p-6">
-			<h1 className="text-2xl font-bold">Settings</h1>
-			<p className="mt-4">Settings configuration coming soon.</p>
-		</div>
-	)
-});
-
 const routeTree = rootRoute.addChildren([
 	indexRoute, 
 	uploadRoute, 
-	chartsRoute,
-	dateRangeRoute,
-	settingsRoute
+	chartsRoute
 ]);
 
 const router = createRouter({

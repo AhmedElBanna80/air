@@ -3,12 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Link, Outlet } from '@tanstack/react-router';
 import {
   BarChart3Icon,
-  CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   HomeIcon,
   MenuIcon,
-  SettingsIcon,
+  UploadIcon,
   X
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -149,7 +148,7 @@ export function RootComponent() {
             {(!sidebarCollapsed || isMobile) && "Charts"}
           </Link>
           <Link
-            to="/date-range"
+            to="/upload"
             activeProps={{
               className: 'bg-sidebar-accent text-sidebar-accent-foreground',
             }}
@@ -159,22 +158,8 @@ export function RootComponent() {
             )}
             onClick={() => isMobile && setSidebarOpen(false)}
           >
-            <CalendarIcon className={cn("h-5 w-5", !sidebarCollapsed || isMobile ? "mr-3" : "")} />
-            {(!sidebarCollapsed || isMobile) && "Date Range"}
-          </Link>
-          <Link
-            to="/settings"
-            activeProps={{
-              className: 'bg-sidebar-accent text-sidebar-accent-foreground',
-            }}
-            className={cn(
-              "flex items-center p-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors",
-              sidebarCollapsed && !isMobile && "justify-center px-2"
-            )}
-            onClick={() => isMobile && setSidebarOpen(false)}
-          >
-            <SettingsIcon className={cn("h-5 w-5", !sidebarCollapsed || isMobile ? "mr-3" : "")} />
-            {(!sidebarCollapsed || isMobile) && "Settings"}
+            <UploadIcon className={cn("h-5 w-5", !sidebarCollapsed || isMobile ? "mr-3" : "")} />
+            {(!sidebarCollapsed || isMobile) && "Upload Data"}
           </Link>
         </nav>
 
