@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useChartData } from "@/lib/chartState";
 import { MaximizeIcon, RefreshCcwIcon, SearchIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { KeyboardEvent } from "react";
 
 interface FormViewSettingsProps {
@@ -30,6 +30,9 @@ export function FormViewSettings({
         toggleFullScreen,
     } = useChartData();
 
+    // Skip updates flag to prevent infinite loops
+    const skipNextUpdate = useRef(false);
+
     // Local state for the date range
     const [fromDate, setFromDate] = useState(
         customRange.from ? new Date(customRange.from) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
@@ -38,11 +41,40 @@ export function FormViewSettings({
         customRange.to ? new Date(customRange.to) : new Date(),
     );
 
-    // Update the custom range when the dates change
+    // Sync context state to local state when customRange changes
     useEffect(() => {
-        handleCustomDateChange("from", fromDate.toISOString().split('T')[0]);
-        handleCustomDateChange("to", toDate.toISOString().split('T')[0]);
-    }, [fromDate, toDate, handleCustomDateChange]);
+        if (!skipNextUpdate.current) {
+            // Only update local state if changes are coming from context
+            const newFromDate = new Date(customRange.from);
+            const newToDate = new Date(customRange.to);
+            
+            if (newFromDate.getTime() !== fromDate.getTime()) {
+                setFromDate(newFromDate);
+            }
+            
+            if (newToDate.getTime() !== toDate.getTime()) {
+                setToDate(newToDate);
+            }
+        } else {
+            // Reset the flag
+            skipNextUpdate.current = false;
+        }
+    }, [customRange, fromDate, toDate]);
+
+    // Update the custom range when the dates change
+    const handleLocalDateChange = (field: "from" | "to", date: Date) => {
+        // Set the flag to prevent the other effect from firing
+        skipNextUpdate.current = true;
+        
+        if (field === "from") {
+            setFromDate(date);
+        } else {
+            setToDate(date);
+        }
+        
+        // Update the context
+        handleCustomDateChange(field, date.toISOString().split('T')[0]);
+    };
 
     // Select state
     const [isSelectOpen, setIsSelectOpen] = useState(false);
@@ -183,7 +215,7 @@ export function FormViewSettings({
                             id="date-from"
                             type="date"
                             value={fromDate.toISOString().split('T')[0]}
-                            onChange={(e) => setFromDate(new Date(e.target.value))}
+                            onChange={(e) => handleLocalDateChange("from", new Date(e.target.value))}
                             className="h-9 rounded-md border border-input px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                         />
                     </div>
@@ -195,7 +227,7 @@ export function FormViewSettings({
                             id="date-to"
                             type="date"
                             value={toDate.toISOString().split('T')[0]}
-                            onChange={(e) => setToDate(new Date(e.target.value))}
+                            onChange={(e) => handleLocalDateChange("to", new Date(e.target.value))}
                             className="h-9 rounded-md border border-input px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                         />
                     </div>

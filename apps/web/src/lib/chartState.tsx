@@ -156,13 +156,16 @@ export function useChartData() {
   // Callbacks for state updates
   const handleCustomDateChange = useCallback(
     (field: "from" | "to", value: string) => {
-      updateChartState({
-        customRange: {
-          ...customRange,
-          [field]: value,
-        },
-        needsRefresh: true // Set flag to indicate changes need refreshing
-      });
+      // Only update if value has actually changed
+      if (customRange[field] !== value) {
+        updateChartState({
+          customRange: {
+            ...customRange,
+            [field]: value,
+          },
+          needsRefresh: true // Set flag to indicate changes need refreshing
+        });
+      }
     },
     [customRange, updateChartState]
   );
