@@ -103,7 +103,7 @@ export function ChartsPage() {
 
 	return (
 		<div className="w-full h-full flex">
-			<Card className="w-full h-full flex flex-col flex-1 border-0 rounded-none shadow-none">
+			<Card className="w-full h-full flex flex-col flex-1 border-0 rounded-none shadow-none card">
 				<CardContent className="flex-1 p-0">
 					{isLoading ? (
 						<div className="h-full min-h-[500px] flex items-center justify-center p-6">

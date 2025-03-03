@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { TimeSeriesData } from "@/lib/api";
 import { ChartControls } from "./chart-controls";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	CartesianGrid,
 	Line,
@@ -71,6 +71,7 @@ export default function AirQualityChart({
 		"co",
 		"temperature",
 	]);
+	const chartContainerRef = useRef<HTMLDivElement>(null);
 
 	// Format date based on groupBy period
 	const formatDateByGrouping = useCallback((date: Date): string => {
@@ -351,7 +352,7 @@ export default function AirQualityChart({
 	}
 
 	return (
-		<div className="w-full h-full flex flex-col">
+		<div className="w-full h-full flex flex-col" ref={chartContainerRef}>
 			<ChartControls
 				onRefresh={onRefresh}
 				groupBy={groupBy}
@@ -360,6 +361,7 @@ export default function AirQualityChart({
 				onDateChange={onDateChange}
 				groupByOptions={GROUP_BY_OPTIONS}
 				dateRangeSummary={dateRangeSummary}
+				containerElement={chartContainerRef.current}
 			/>
 			
 			<CustomLegend />
