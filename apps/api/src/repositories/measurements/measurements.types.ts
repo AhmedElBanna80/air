@@ -1,7 +1,6 @@
 import type { Container } from "di-wise";
 import type { z } from "zod";
-
-import { Type } from "di-wise";
+import { Scope, Type } from "di-wise";
 
 import type { insertAirQualitySchema, selectAirQualitySchema } from "@/api/services/db/schema/air-quality";
 
@@ -41,5 +40,5 @@ export const AiQualityRepo = Type<AirQualityRepositoryType>("AirQualityRepositor
 export function registerAirQualityRepo(container: Container) {
   container.register(AiQualityRepo, {
     useClass: AirQualityRepository,
-  });
+  }, { scope: Scope.Container });
 }

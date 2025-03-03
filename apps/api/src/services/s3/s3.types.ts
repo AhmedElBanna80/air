@@ -3,8 +3,6 @@ import type { Buffer } from "node:buffer";
 
 import { Scope, Type } from "di-wise";
 
-import { S3Service } from "./s3.service";
-
 export type S3UploadResult = {
   key: string;
   location: string;
@@ -30,9 +28,3 @@ export type S3ServiceType = {
 };
 
 export const S3ServiceToken = Type<S3ServiceType>("S3Service");
-
-export function registerS3Service(container: Container) {
-  container.register(S3ServiceToken, {
-    useClass: S3Service,
-  }, { scope: Scope.Container });
-}

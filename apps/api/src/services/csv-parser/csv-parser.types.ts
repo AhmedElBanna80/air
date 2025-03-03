@@ -1,9 +1,8 @@
 import type { Container } from "di-wise";
-import { Type } from "di-wise";
+
+import { Scope, Type } from "di-wise";
 
 import type { TypedReadable } from "../../lib/types";
-
-import { CsvParserService } from "./csv-parser.service";
 
 export type InputType = {
   "Date": string;
@@ -40,14 +39,8 @@ export type OutputType = {
   absoluteHumidity: number;
 };
 
-export interface CsvParserServiceType {
-  parseAirQualityData(file: File, batchSize?: number): TypedReadable<OutputType[]>;
-}
+export type CsvParserServiceType = {
+  parseAirQualityData: (file: File, batchSize?: number) => TypedReadable<OutputType[]>;
+};
 
 export const CsvParserServiceToken = Type<CsvParserServiceType>("CsvParserService");
-
-export function registerCsvParserService(container: Container) {
-  container.register(CsvParserServiceToken, {
-    useClass: CsvParserService,
-  });
-} 

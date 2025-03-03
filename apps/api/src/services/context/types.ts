@@ -1,6 +1,6 @@
 import type { Container } from "di-wise";
 
-import { Type } from "di-wise";
+import { Scope, Type } from "di-wise";
 
 import type env from "@/api/env";
 
@@ -24,5 +24,5 @@ export const ContextToken = Type<ContextType>("Context");
 export function registerContext(container: Container) {
   container.register(ContextToken, {
     useClass: ContextService,
-  });
+  }, { scope: Scope.Container });
 }

@@ -1,6 +1,6 @@
 import type { Container } from "di-wise";
 
-import { Type } from "di-wise";
+import { Scope, Type } from "di-wise";
 
 import type { BucketWidth } from "@/api/repositories";
 
@@ -48,5 +48,5 @@ export const AirQualityServiceToken = Type<AirQualityServiceType>("AirQualitySer
 export function registerAirQualityService(container: Container) {
   container.register(AirQualityServiceToken, {
     useClass: AirQualityService,
-  });
+  }, { scope: Scope.Container });
 }

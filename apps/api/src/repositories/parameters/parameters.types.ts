@@ -1,6 +1,6 @@
 import type { Container } from "di-wise";
 
-import { Type } from "di-wise";
+import { Scope, Type } from "di-wise";
 
 import { ParametersRepository } from ".";
 
@@ -25,5 +25,5 @@ export const ParametersRepo = Type<ParameterRepositoryType>("ParametersRepositor
 export function registerParametersRepo(container: Container) {
   container.register(ParametersRepo, {
     useClass: ParametersRepository,
-  });
+  }, { scope: Scope.Container });
 }
