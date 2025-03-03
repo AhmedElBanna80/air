@@ -17,9 +17,9 @@ export function honoMiddleware(rootContainer: Container, app: Hono) {
   return async (c: Context, next: () => Promise<void>) => {
     // Create child container for request context
     const childContainer = rootContainer.createChild();
-    const contextService = rootContainer.resolve<Record<string, any>>(ContextToken);
+    const contextService = rootContainer.resolve<Record<string, unknown>>(ContextToken);
     for (const key in contextService) {
-      c.set(key as any, contextService[key]);
+      c.set(key as string, contextService[key]);
     }
     // Register current context and app
     childContainer.register(HonoContext, { useValue: c });

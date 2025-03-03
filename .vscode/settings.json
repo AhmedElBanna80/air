@@ -49,5 +49,8 @@
   "cSpell.words": [
     "Hono",
     "openapi"
+  ],
+  "conventionalCommits.scopes": [
+    "app"
   ]
 }

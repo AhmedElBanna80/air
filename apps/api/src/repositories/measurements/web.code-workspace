@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../../../../web"
+		},
+		{
+			"path": "../../.."
+		}
+	],
+	"settings": {
+		"conventionalCommits.scopes": [
+			"ui",
+			"api",
+			"app"
+		]
+	}
+}

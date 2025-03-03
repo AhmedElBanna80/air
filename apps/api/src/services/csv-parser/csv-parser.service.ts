@@ -69,7 +69,7 @@ export class CsvParserService implements CsvParserServiceType {
   // Here we explicitly annotate that the stream emits batches (arrays) of OutputType.
   parseAirQualityData(
     file: File,
-    batchSize: number = 1000,
+    batchSize = 1000,
   ): TypedReadable<OutputType[]> {
     const webStream = file.stream() as ReadableStream;
     const nodeStream = Readable.fromWeb(webStream);

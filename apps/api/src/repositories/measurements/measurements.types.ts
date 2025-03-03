@@ -1,5 +1,6 @@
 import type { Container } from "di-wise";
 import type { z } from "zod";
+
 import { Scope, Type } from "di-wise";
 
 import type { insertAirQualitySchema, selectAirQualitySchema } from "@/api/services/db/schema/air-quality";
