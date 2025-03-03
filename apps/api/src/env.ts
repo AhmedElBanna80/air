@@ -30,6 +30,13 @@ const EnvSchema = z.object({
   POSTGRES_DB: z.string(),
   POSTGRES_HOST: z.string(),
   POSTGRES_PORT: z.coerce.number(),
+  
+  // S3 Configuration (with defaults for LocalStack)
+  S3_ENDPOINT: z.string().default("http://localhost:4566"),
+  S3_REGION: z.string().default("us-east-1"),
+  S3_ACCESS_KEY: z.string().default("test"),
+  S3_SECRET_KEY: z.string().default("test"),
+  S3_BUCKET: z.string().default("air-quality-data"),
 });
 
 export type EnvType = z.infer<typeof EnvSchema>;

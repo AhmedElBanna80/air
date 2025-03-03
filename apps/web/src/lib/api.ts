@@ -46,6 +46,31 @@ export type TimeSeriesData = {
   };
 };
 
+// Define types for S3 upload responses
+export type S3UploadData = {
+  key: string;
+  location: string;
+  etag: string;
+};
+
+export type S3UploadResponse = {
+  success: boolean;
+  message: string;
+  data?: S3UploadData;
+};
+
+export type S3FileInfo = {
+  key: string;
+  size: number;
+  lastModified: string;
+};
+
+export type S3FilesResponse = {
+  success: boolean;
+  files?: S3FileInfo[];
+  message?: string;
+};
+
 // Function to handle API errors
 function handleApiError(response: Response) {
   if (!response.ok) {
@@ -104,13 +129,13 @@ export async function fetchTimeSeriesData(
 }
 
 // Upload CSV file
-export async function uploadCsvFile(file: File): Promise<{ success: boolean; message: string }> {
+export async function uploadCsvFile(file: File): Promise<S3UploadResponse> {
   const formData = new FormData();
   formData.append('file', file);
   
-  console.log('Uploading CSV file to:', `${API_BASE_URL}/air-measurements`);
+  console.log('Uploading CSV file to:', `${API_BASE_URL}/upload/csv`);
   try {
-    const response = await fetch(`${API_BASE_URL}/air-measurements`, {
+    const response = await fetch(`${API_BASE_URL}/upload/csv`, {
       method: 'POST',
       body: formData,
     });
@@ -120,10 +145,35 @@ export async function uploadCsvFile(file: File): Promise<{ success: boolean; mes
     console.log('Upload data:', data);
     return {
       success: data.success,
-      message: data.success ? data.message : data.error,
+      message: data.message,
+      data: data.data
     };
   } catch (error) {
     console.error('Error uploading CSV file:', error);
-    throw error;
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+// Get list of uploaded files
+export async function getUploadedFiles(): Promise<S3FilesResponse> {
+  console.log('Fetching uploaded files from:', `${API_BASE_URL}/upload/files`);
+  try {
+    const response = await fetch(`${API_BASE_URL}/upload/files`);
+    console.log('Files response status:', response.status);
+    const data = await handleApiError(response);
+    console.log('Files data:', data);
+    return {
+      success: data.success,
+      files: data.files
+    };
+  } catch (error) {
+    console.error('Error fetching uploaded files:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 }

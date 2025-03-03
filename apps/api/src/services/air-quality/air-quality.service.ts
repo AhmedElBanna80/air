@@ -1,4 +1,4 @@
-import { Injectable, inject } from "di-wise";
+import { inject, Injectable } from "di-wise";
 
 import type { AirQualityStats, BucketWidth } from "@/api/repositories";
 
@@ -36,7 +36,7 @@ export class AirQualityService implements AirQualityServiceType {
         from,
         to,
         groupBy,
-        limit
+        limit,
       );
 
       // Default empty response structure
@@ -127,9 +127,9 @@ export class AirQualityService implements AirQualityServiceType {
           if (noxParam) {
             timeSeriesData.parameters.push({
               parameter: noxParam,
-              series: measurements.map((m: any) => ({
+              series: measurements.map((m: AirQualityStats) => ({
                 timestamp: m.timestamp.toString(),
-                value: m.avgNoxGt,
+                value: m.avgNOxGt,
               })),
             });
           }
@@ -151,7 +151,8 @@ export class AirQualityService implements AirQualityServiceType {
       }
 
       return timeSeriesData;
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.error("Error fetching time series data:", error);
       throw error;
     }
