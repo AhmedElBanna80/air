@@ -1,33 +1,15 @@
-import { Label } from "@/components/ui/label";
 import { useQuery } from "@tanstack/react-query";
-import { FilterIcon, RefreshCcwIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import AirQualityChart from "../components/charts/air-quality-chart";
-import { Button } from "../components/ui/button";
 import {
     Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
+    CardContent
 } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "../components/ui/popover";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../components/ui/select";
 import { fetchTimeSeriesData } from "../lib/api";
 
 
 const groupByOptions = [
+	{ label: "Hour", value: "hour" },
 	{ label: "Day", value: "day" },
 	{ label: "Week", value: "week" },
 	{ label: "Month", value: "month" },
@@ -100,7 +82,7 @@ export function ChartsPage() {
 		}));
 	};
 
-	// Handle popover close
+	// Handle popover open change
 	const handlePopoverOpenChange = (open: boolean) => {
 		setFilterOpen(open);
 		// When closing the popover, refetch the data with new filters
@@ -115,105 +97,42 @@ export function ChartsPage() {
 		const toDate = new Date(customRange.to).toLocaleDateString();
 		return `${fromDate} to ${toDate}`;
 	};
+	
+	// Format date range summary with groupBy
+	const dateRangeSummary = `${formatDateRange()} • ${groupByOptions.find(g => g.value === groupBy)?.label || groupBy}`;
 
 	return (
-		<div className="w-full space-y-4 h-full flex flex-col">
-			<div className="flex justify-between items-center">
-				<h1 className="text-2xl font-bold tracking-tight">
-					Air Quality Charts
-				</h1>
-				<div className="flex items-center gap-2">
-					<Popover open={filterOpen} onOpenChange={handlePopoverOpenChange}>
-						<PopoverTrigger asChild>
-							<Button variant="outline" size="sm">
-								<FilterIcon className="h-4 w-4 mr-2" />
-								Filter
-							</Button>
-						</PopoverTrigger>
-						<PopoverContent className="w-80 p-4" align="end">
-							<div className="space-y-4">
-								<h4 className="font-medium">Chart Settings</h4>
-								<div className="space-y-2">
-									<Label htmlFor="date-from">From</Label>
-									<Input
-										id="date-from"
-										type="date"
-										value={customRange.from}
-										onChange={(e) =>
-											handleCustomDateChange("from", e.target.value)
-										}
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="date-to">To</Label>
-									<Input
-										id="date-to"
-										type="date"
-										value={customRange.to}
-										onChange={(e) =>
-											handleCustomDateChange("to", e.target.value)
-										}
-									/>
-								</div>
-								<div className="space-y-2">
-									<Label htmlFor="group-by">Group By</Label>
-									<Select value={groupBy} onValueChange={setGroupBy}>
-										<SelectTrigger id="group-by">
-											<SelectValue placeholder="Select grouping" />
-										</SelectTrigger>
-										<SelectContent>
-											{groupByOptions.map((option) => (
-												<SelectItem key={option.value} value={option.value}>
-													{option.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-							</div>
-						</PopoverContent>
-					</Popover>
-					<Button variant="outline" size="sm" onClick={() => refetch()}>
-						<RefreshCcwIcon className="h-4 w-4 mr-2" />
-						Refresh
-					</Button>
-				</div>
-			</div>
-
-			<div className="text-sm text-muted-foreground mt-2">
-				{formatDateRange()} • {groupByOptions.find(g => g.value === groupBy)?.label || groupBy}
-			</div>
-
-			<Card className="w-full h-full flex flex-col mt-4 flex-1">
-				<CardHeader className="pb-0">
-					<CardTitle>Air Quality Time Series</CardTitle>
-					<CardDescription>
-						View air quality parameters over time
-					</CardDescription>
-				</CardHeader>
-				<CardContent className="flex-1 pt-4">
+		<div className="w-full h-full flex">
+			<Card className="w-full h-full flex flex-col flex-1 border-0 rounded-none shadow-none">
+				<CardContent className="flex-1 p-0">
 					{isLoading ? (
-						<div className="h-full min-h-[500px] flex items-center justify-center">
+						<div className="h-full min-h-[500px] flex items-center justify-center p-6">
 							<p>Loading chart data...</p>
 						</div>
 					) : isError ? (
-						<div className="h-full min-h-[500px] flex items-center justify-center">
+						<div className="h-full min-h-[500px] flex items-center justify-center p-6">
 							<p className="text-red-500">
 								Error loading chart data. Please try again.
 							</p>
 						</div>
 					) : !data ? (
-						<div className="h-full min-h-[500px] flex items-center justify-center">
+						<div className="h-full min-h-[500px] flex items-center justify-center p-6">
 							<p className="text-muted-foreground">
 								No data available for the selected time range.
 							</p>
 						</div>
 					) : (
-						<div className="h-full min-h-[500px]">
+						<div className="h-full w-full p-4">
 							<AirQualityChart
 								data={data}
 								from={dateRange.from}
 								to={dateRange.to}
+								groupBy={groupBy}
+								onRefresh={() => refetch()}
+								onDateChange={handleCustomDateChange}
+								onGroupByChange={setGroupBy}
+								dateRange={customRange}
+								dateRangeSummary={dateRangeSummary}
 							/>
 						</div>
 					)}
