@@ -2,15 +2,14 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { Link, Outlet } from '@tanstack/react-router';
 import {
-    BarChart3Icon,
-    CalendarIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    HomeIcon,
-    MenuIcon,
-    SettingsIcon,
-    UploadIcon,
-    X
+  BarChart3Icon,
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  HomeIcon,
+  MenuIcon,
+  SettingsIcon,
+  X
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { cn } from '../lib/utils';
@@ -71,9 +70,6 @@ export function RootComponent() {
       setSidebarCollapsed(!sidebarCollapsed);
     }
   };
-
-  // Determine if sidebar should be visible
-  const isSidebarVisible = isMobile ? sidebarOpen : !sidebarCollapsed;
 
   return (
     <div className="flex h-screen bg-background">

@@ -50,7 +50,7 @@ interface AirQualityChartProps {
 	onRefresh: () => void;
 	onDateChange: (field: "from" | "to", value: string) => void;
 	onGroupByChange: (value: string) => void;
-	dateRange: {
+	customRange: {
 		from: string;
 		to: string;
 	};
@@ -80,7 +80,7 @@ function AirQualityChartComponent({
 	onRefresh,
 	onDateChange,
 	onGroupByChange,
-	dateRange,
+	customRange,
 	dateRangeSummary
 }: AirQualityChartProps) {
 	// State management
@@ -360,16 +360,11 @@ function AirQualityChartComponent({
 
 	return (
 		<div className="w-full h-full flex flex-col" ref={chartContainerRef}>
-			<ChartControls
-				onRefresh={onRefresh}
-				groupBy={groupBy}
-				setGroupBy={onGroupByChange}
-				dateRange={dateRange}
-				onDateChange={onDateChange}
-				groupByOptions={GROUP_BY_OPTIONS}
-				dateRangeSummary={dateRangeSummary}
-				containerElement={chartContainerRef.current}
-			/>
+			{chartContainerRef.current && (
+				<ChartControls
+					containerElement={chartContainerRef.current}
+				/>
+			)}
 			
 			<CustomLegend />
 			
