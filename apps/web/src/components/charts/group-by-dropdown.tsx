@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import React, { useState, useCallback, memo } from "react";
+import type React from "react";
+import { useState, useCallback, memo } from "react";
 
 interface GroupByOption {
   label: string;
