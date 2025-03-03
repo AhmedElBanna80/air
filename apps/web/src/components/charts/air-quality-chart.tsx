@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import type { TimeSeriesData } from "@/lib/api";
 import { ChartControls } from "./chart-controls";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
 	CartesianGrid,
 	Line,
@@ -15,7 +15,7 @@ import {
 	YAxis,
 } from "recharts";
 
-// Define colors for each parameter
+// Define colors for each parameter as a constant outside the component
 const COLORS = {
 	co: "#8884d8",
 	nmhc: "#82ca9d",
@@ -27,13 +27,14 @@ const COLORS = {
 	absoluteHumidity: "#8800ff",
 };
 
-// Group by options
+// Group by options defined as a constant outside the component
 const GROUP_BY_OPTIONS = [
 	{ label: "Day", value: "day" },
 	{ label: "Week", value: "week" },
 	{ label: "Month", value: "month" },
 ];
 
+// Type definitions
 type ChartDataPoint = {
 	timestamp: string;
 	timestampDate: Date; // For sorting
@@ -56,7 +57,24 @@ interface AirQualityChartProps {
 	dateRangeSummary: string;
 }
 
-export default function AirQualityChart({
+// Date formatting functions
+const formatDateDay = (date: Date): string => {
+	return date.toLocaleDateString('en-US', { 
+		month: 'short', 
+		day: 'numeric',
+		year: 'numeric'
+	});
+};
+
+const formatDateMonth = (date: Date): string => {
+	return date.toLocaleDateString('en-US', { 
+		month: 'short', 
+		year: 'numeric'
+	});
+};
+
+// Main chart component
+function AirQualityChartComponent({
 	data,
 	groupBy,
 	onRefresh,
@@ -65,6 +83,7 @@ export default function AirQualityChart({
 	dateRange,
 	dateRangeSummary
 }: AirQualityChartProps) {
+	// State management
 	const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
 	const [availableParameters, setAvailableParameters] = useState<string[]>([]);
 	const [selectedParameters, setSelectedParameters] = useState<string[]>([
@@ -73,26 +92,14 @@ export default function AirQualityChart({
 	]);
 	const chartContainerRef = useRef<HTMLDivElement>(null);
 
-	// Format date based on groupBy period
+	// Format date based on groupBy period using memoized callback
 	const formatDateByGrouping = useCallback((date: Date): string => {
 		switch (groupBy) {
 			case "day":
-				return date.toLocaleDateString('en-US', { 
-					month: 'short', 
-					day: 'numeric',
-					year: 'numeric'
-				});
 			case "week":
-				return date.toLocaleDateString('en-US', {
-					month: 'short',
-					day: 'numeric',
-					year: 'numeric'
-				});
+				return formatDateDay(date);
 			case "month":
-				return date.toLocaleDateString('en-US', { 
-					month: 'short', 
-					year: 'numeric'
-				});
+				return formatDateMonth(date);
 			default:
 				return date.toLocaleDateString();
 		}
@@ -403,3 +410,5 @@ export default function AirQualityChart({
 		</div>
 	);
 }
+
+export default memo(AirQualityChartComponent);
