@@ -1,107 +1,155 @@
-# Hono + React / Vite + Cloudflare + pnpm workspaces monorepo
+# Air Quality Monitoring System
 
-A monorepo setup using pnpm workspaces with a Hono API and React / vite client deployed to Cloudflare Workers / Static Assets / D1.
+This monorepo contains a full-stack application for air quality monitoring, with data upload, processing, and visualization capabilities.
 
-Features:
+## Repository Structure
 
-- Run tasks in parallel across apps / packages with pnpm
-- Hono API [proxied with vite](./apps/web/vite.config.ts) during development
-- Hono [RPC client](packages/api-client/src/index.ts) built during development for faster inference
-- Shared Zod validators with drizzle-zod
-- Shared eslint config
-- Shared tsconfig
+- `/apps/api` - Backend API built with Hono, TypeScript, and PostgreSQL with TimescaleDB
+- `/apps/web` - Frontend application built with React and TypeScript
 
-Tech Stack:
+## Features
 
-- api
-  - hono
-  - hono openapi
-  - authjs
-  - stoker
-  - drizzle
-  - drizzle-zod
-- web
-  - react
-  - vite
-  - react-hook-form
-  - tanstack router
-- dev tooling
-  - typescript
-  - eslint with `@antfu/eslint-config`
+- CSV data uploading for air quality measurements
+- Data processing with dependency injection
+- Time series visualization with interactive charts
+- Parameter filtering and date range selection
+- PostgreSQL with TimescaleDB for efficient time-series data storage
 
-Tour:
+## Prerequisites
 
-- Base [tsconfig.json](./tsconfig.json) with default settings lives in the root
-- Shared packages live in [/packages] directory
-  - Base [eslint.config.js](./packages/eslint-config/eslint.config.js) with default settings
-- Applications live in [/apps] directory
-  - Use any cli to create new apps in here
-  - If cloning a git repo in here be sure to delete the `.git` folder so it is not treated as a submodule
+- Node.js (>= 16)
+- pnpm
+- Docker and Docker Compose
 
-> All pnpm commands are run from the root of the repo.
+## Getting Started
 
-## Local Setup
+### 1. Install Dependencies
 
-### Install dependencies
+First, install all dependencies using pnpm:
 
-```sh
-pnpm i
+```bash
+# At the root of the monorepo
+pnpm install
 ```
 
-### Create / Update Cloudflare D1 Database id
+### 2. Start the Database
 
-```sh
-pnpm dlx wrangler create d1 replace-with-your-database-name-here
+The application uses PostgreSQL with TimescaleDB extension for time-series data. Start the database using Docker Compose:
+
+```bash
+# Navigate to the API directory
+cd apps/api
+
+# Start the database container
+docker-compose up -d
 ```
 
-Update `database_name` and `database_id` in [apps/api/wrangler.toml](./apps/api/wrangler.toml) with the output from wrangler.
+This will start PostgreSQL with TimescaleDB on port 5432 and initialize the required tables and extensions.
 
-### Run DB migrations locally
+### 3. Start the Development Servers
 
-```sh
-pnpm run -r db:migrate:local
+#### Start the API server:
+
+```bash
+# In the api directory
+cd apps/api
+pnpm dev
 ```
 
-### Start Apps
+The API will be available at http://localhost:3001.
 
-```sh
-pnpm run dev
+#### Start the Web application:
+
+```bash
+# In a new terminal, navigate to the web directory
+cd apps/web
+pnpm dev
 ```
 
-Visit [http://localhost:5173](http://localhost:5173)
+The web application will be available at http://localhost:3000.
 
-All requests to `/api` will be proxied to the hono server running on [http://localhost:8787](http://localhost:8787)
+## Using the Application
 
-## Production Setup
+### 1. Upload Air Quality Data
 
-### Run DB migrations on Cloudflare D1
+1. Open the web application at http://localhost:3000
+2. Navigate to the Upload page
+3. Click on "Choose File" and select a CSV file containing air quality data
+4. Click "Upload" to upload and process the file
+5. Wait for the confirmation message indicating successful upload
 
-```sh
-pnpm run -r db:migrate:remote
+The CSV file should have the following columns:
+- Date (DD/MM/YYYY)
+- Time (HH.MM.SS)
+- CO(GT) - Carbon monoxide ground truth
+- PT08.S1(CO) - PT08.S1 sensor response for CO
+- NMHC(GT) - Non-methane hydrocarbons ground truth
+- C6H6(GT) - Benzene ground truth
+- PT08.S2(NMHC) - PT08.S2 sensor response for NMHC
+- NOx(GT) - Nitrogen oxides ground truth
+- PT08.S3(NOx) - PT08.S3 sensor response for NOx
+- NO2(GT) - Nitrogen dioxide ground truth
+- PT08.S4(NO2) - PT08.S4 sensor response for NO2
+- PT08.S5(O3) - PT08.S5 sensor response for O3
+- T - Temperature
+- RH - Relative Humidity
+- AH - Absolute Humidity
+
+### 2. View Air Quality Charts
+
+1. After uploading data, navigate to the Charts page
+2. Select a date range to view the data
+3. Choose parameters to display from the dropdown menu
+4. The chart will display the selected parameters over time
+5. Hover over data points to see exact values
+
+## Development
+
+### API Environment Variables
+
+The API uses the following environment variables (defined in `/apps/api/.env`):
+
+```
+PORT=3001
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=airquality
+S3_ENDPOINT=http://localhost:9000
+S3_REGION=us-east-1
+S3_ACCESS_KEY=minioadmin
+S3_SECRET_KEY=minioadmin
+S3_BUCKET=air-quality-data
 ```
 
-### Deploy
+### Adding New Components
 
-```sh
-pnpm run deploy
+The web application uses shadcn/ui components. To add new components, use:
+
+```bash
+cd apps/web
+pnpx shadcn@canary add button
 ```
 
-## Tasks
+### Running Tests
 
-### Lint
+```bash
+# Run API tests
+cd apps/api
+pnpm test
 
-```sh
-pnpm run lint
+# Run web tests
+cd apps/web
+pnpm test
 ```
 
-### Test
+## Troubleshooting
 
-```sh
-pnpm run test
-```
+- If you encounter database connection issues, make sure the Docker container is running: `docker ps`
+- For "Module not found" errors, try running `pnpm install` again
+- If uploads fail, check the API logs for detailed error messages
 
-### Build
+## License
 
-```sh
-pnpm run build
-```
+MIT
