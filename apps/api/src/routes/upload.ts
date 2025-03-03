@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { Buffer } from "node:buffer";
 
-import { S3ServiceToken } from "../services/s3";
 import { inject } from "../middlewares/middleware";
+import { S3ServiceToken } from "../services/s3";
 
 const uploadRoute = new Hono();
 
@@ -10,7 +10,6 @@ const uploadRoute = new Hono();
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 // Inject S3 service
-
 
 // Upload CSV file to S3
 uploadRoute.post("/csv", async (c) => {
@@ -46,7 +45,6 @@ uploadRoute.post("/csv", async (c) => {
 
     // Read file content as buffer
     const fileContent = Buffer.from(await file.arrayBuffer());
-    
     // Generate unique key for the file
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const key = `uploads/${timestamp}-${file.name}`;
@@ -82,7 +80,7 @@ uploadRoute.post("/csv", async (c) => {
 uploadRoute.get("/files", async (c) => {
   try {
     const files = await s3Service.listFiles("uploads/");
-    
+
     return c.json({
       success: true,
       files: files.map(file => ({

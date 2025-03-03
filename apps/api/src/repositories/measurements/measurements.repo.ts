@@ -1,8 +1,9 @@
 import { inject, Injectable } from "di-wise";
 import { and, between, sql } from "drizzle-orm";
 
-import { DataBase, DataBaseType } from "@/api/services/db/database.provider.js";
+import type { DataBaseType } from "@/api/services/db/database.provider.js";
 
+import { DataBase } from "@/api/services/db/database.provider.js";
 import { airQualityMeasurements } from "@/api/services/db/schema/air-quality.js";
 
 import type { AirQualityData, AirQualityMeasurement, AirQualityRepositoryType, AirQualityStats, BucketWidth } from "./measurements.types.js";
@@ -104,7 +105,7 @@ export class AirQualityRepository implements AirQualityRepositoryType {
     limit?: number,
   ): Promise<AirQualityStats[]> {
     const dbDQuery = await airQualityByTimeRangeQuery(this.db, from, to, groupBy, limit);
-    return dbDQuery;
+    return dbDQuery as AirQualityStats[];
   }
 
   // New method to get all raw data within a time range
