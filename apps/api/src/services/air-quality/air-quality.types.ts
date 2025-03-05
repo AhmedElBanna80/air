@@ -36,6 +36,9 @@ export type TimeSeriesData = {
     absoluteHumidity: {
       series: { timestamp: string; value: number }[];
     };
+    [key: string]: {
+      series: { timestamp: string; value: number }[];
+    };
   };
 };
 

@@ -60,94 +60,80 @@ export class AirQualityService implements AirQualityServiceType {
 
       // If we have measurements, process them
       if (measurements && measurements.length > 0) {
-        // Process temperature data
-        timeSeriesData.environmentalData.temperature.series = measurements.map((m: AirQualityStats) => ({
-          timestamp: m.timestamp.toString(),
-          value: m.avgTemperature,
-        }));
-
-        // Process relative humidity data
-        timeSeriesData.environmentalData.relativeHumidity.series = measurements.map((m: AirQualityStats) => ({
-          timestamp: m.timestamp.toString(),
-          value: m.avgRelativeHumidity || m.avgHumidity,
-        }));
-
-        // Process absolute humidity data
-        timeSeriesData.environmentalData.absoluteHumidity.series = measurements.map((m: AirQualityStats) => ({
-          timestamp: m.timestamp.toString(),
-          value: m.avgAbsoluteHumidity,
-        }));
-
-        // Process air quality parameters
-        // CO
-        if (parameterMap.has("co")) {
-          const coParam = parameterMap.get("co");
-          if (coParam) {
-            timeSeriesData.parameters.push({
-              parameter: coParam,
-              series: measurements.map((m: AirQualityStats) => ({
-                timestamp: m.timestamp.toString(),
-                value: m.avgCoGt,
-              })),
-            });
+        // Create parameter data structures first
+        type ParamType = ReturnType<typeof parameterMap.get>;
+        
+        interface ParameterObject {
+          parameter: ParamType;
+          series: Array<{ timestamp: string; value: number }>;
+        }
+        
+        const parameterObjects: Record<string, ParameterObject> = {};
+        
+        // Set up objects for each parameter we'll track
+        ["co", "nmhc", "benzene", "nox", "no2"].forEach(paramName => {
+          if (parameterMap.has(paramName)) {
+            const param = parameterMap.get(paramName);
+            if (param) {
+              parameterObjects[paramName] = {
+                parameter: param,
+                series: []
+              };
+            }
+          }
+        });
+        
+        // Initialize environmental data arrays
+        timeSeriesData.environmentalData.temperature.series = [];
+        timeSeriesData.environmentalData.relativeHumidity.series = [];
+        timeSeriesData.environmentalData.absoluteHumidity.series = [];
+        
+        // Single loop through all measurements
+        for (const m of measurements) {
+          const timestamp = m.timestamp.toString();
+          
+          // Add environmental data
+          timeSeriesData.environmentalData.temperature.series.push({
+            timestamp,
+            value: m.avgTemperature
+          });
+          
+          timeSeriesData.environmentalData.relativeHumidity.series.push({
+            timestamp,
+            value: m.avgHumidity
+          });
+          
+          timeSeriesData.environmentalData.absoluteHumidity.series.push({
+            timestamp,
+            value: m.avgAbsoluteHumidity
+          });
+          
+          // Add parameter data
+          if (parameterObjects.co) {
+            parameterObjects.co.series.push({ timestamp, value: m.avgCoGt });
+          }
+          
+          if (parameterObjects.nmhc) {
+            parameterObjects.nmhc.series.push({ timestamp, value: m.avgNmhcGt });
+          }
+          
+          if (parameterObjects.benzene) {
+            parameterObjects.benzene.series.push({ timestamp, value: m.avgBenzeneGt });
+          }
+          
+          if (parameterObjects.nox) {
+            parameterObjects.nox.series.push({ timestamp, value: m.avgNOxGt });
+          }
+          
+          if (parameterObjects.no2) {
+            parameterObjects.no2.series.push({ timestamp, value: m.avgNo2Gt });
           }
         }
-
-        // NMHC
-        if (parameterMap.has("nmhc")) {
-          const nmhcParam = parameterMap.get("nmhc");
-          if (nmhcParam) {
-            timeSeriesData.parameters.push({
-              parameter: nmhcParam,
-              series: measurements.map((m: AirQualityStats) => ({
-                timestamp: m.timestamp.toString(),
-                value: m.avgNmhcGt,
-              })),
-            });
-          }
-        }
-
-        // Benzene
-        if (parameterMap.has("benzene")) {
-          const benzeneParam = parameterMap.get("benzene");
-          if (benzeneParam) {
-            timeSeriesData.parameters.push({
-              parameter: benzeneParam,
-              series: measurements.map((m: AirQualityStats) => ({
-                timestamp: m.timestamp.toString(),
-                value: m.avgBenzeneGt,
-              })),
-            });
-          }
-        }
-
-        // NOx
-        if (parameterMap.has("nox")) {
-          const noxParam = parameterMap.get("nox");
-          if (noxParam) {
-            timeSeriesData.parameters.push({
-              parameter: noxParam,
-              series: measurements.map((m: AirQualityStats) => ({
-                timestamp: m.timestamp.toString(),
-                value: m.avgNOxGt,
-              })),
-            });
-          }
-        }
-
-        // NO2
-        if (parameterMap.has("no2")) {
-          const no2Param = parameterMap.get("no2");
-          if (no2Param) {
-            timeSeriesData.parameters.push({
-              parameter: no2Param,
-              series: measurements.map((m: AirQualityStats) => ({
-                timestamp: m.timestamp.toString(),
-                value: m.avgNo2Gt,
-              })),
-            });
-          }
-        }
+        
+        // Add all parameter objects to timeSeriesData
+        Object.values(parameterObjects).forEach(param => {
+          timeSeriesData.parameters.push(param);
+        });
       }
 
       return timeSeriesData;
