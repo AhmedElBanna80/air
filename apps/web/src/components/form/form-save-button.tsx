@@ -3,7 +3,7 @@ import type { VariantProps } from 'class-variance-authority';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { Button, buttonVariants as buttonVariantsValue } from '@/components/ui/button';
+import { Button, type buttonVariants as buttonVariantsValue } from '@/components/ui/button';
 import { Slot } from '@radix-ui/react-slot';
 import { controlVariants } from './form-variants';
 import type { formFieldVariants } from './form-variants';
