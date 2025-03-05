@@ -34,5 +34,8 @@
 	},
 	"editor.codeActionsOnSave": {
 		"source.organizeImports.biome": "explicit"
-	}
+	},
+	"conventionalCommits.scopes": [
+		"ui"
+	]
 }
