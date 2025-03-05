@@ -1,113 +1,76 @@
-import React from 'react';
-import { type Path, useFormContext } from 'react-hook-form';
-import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import type { VariantProps } from 'class-variance-authority';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
+import React from 'react';
+import type { FieldValues, Path } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
+import { controlVariants, formFieldVariants, labelVariants, messageVariants } from './form-variants';
 
-// Define the form field layout variants
-const formFieldVariants = cva('w-full', {
-    variants: {
-        layout: {
-            vertical: 'flex flex-col',
-            horizontal: 'flex flex-row items-center gap-4'
-        }
-    },
-    defaultVariants: {
-        layout: 'vertical'
-    }
-});
-
-// Define the label variants
-const labelVariants = cva('text-base', {
-    variants: {
-        layout: {
-            vertical: 'mb-2',
-            horizontal: 'min-w-[120px] mb-0'
-        }
-    },
-    defaultVariants: {
-        layout: 'vertical'
-    }
-});
-
-// Define the control variants
-const controlVariants = cva('', {
-    variants: {
-        layout: {
-            vertical: 'w-full',
-            horizontal: 'flex-1'
-        }
-    },
-    defaultVariants: {
-        layout: 'vertical'
-    }
-});
-
-export interface FormDatePickerProps<T> extends VariantProps<typeof formFieldVariants> {
-    name: keyof T;
+export interface FormDatePickerProps<T extends FieldValues> extends VariantProps<typeof formFieldVariants> {
+    name: Path<T>;
     labelText: string;
     placeholder?: string;
     className?: string;
     datePickerClassName?: string;
+    dateFormat?: string;
 }
 
 const FormDatePicker = React.forwardRef(
-    <T extends object>({ 
+    <T extends FieldValues>({ 
         name, 
         labelText, 
         placeholder = "Select a date", 
         layout, 
         className,
-        datePickerClassName
-    }: FormDatePickerProps<T>, ref: any) => {
+        datePickerClassName,
+        dateFormat = "MMM d, yyyy"
+    }: FormDatePickerProps<T>, ref: React.ForwardedRef<HTMLButtonElement>) => {
         const { control } = useFormContext<T>();
 
         return (
             <FormField
                 control={control}
-                name={name as unknown as Path<T>}
+                name={name}
                 render={({ field }) => (
                     <FormItem className={cn(formFieldVariants({ layout }), className)}>
-                        <FormLabel className={labelVariants({ layout })}>{labelText}</FormLabel>
+                        {labelText && <FormLabel className={labelVariants({ layout })}>{labelText}</FormLabel>}
                         <FormControl className={controlVariants({ layout })}>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
                                         variant="outline"
                                         className={cn(
-                                            "w-full justify-start text-left font-normal",
+                                            "w-full justify-start text-left font-normal bg-background text-foreground",
                                             !field.value && "text-muted-foreground",
                                             datePickerClassName
                                         )}
                                     >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
                                         {field.value ? (
-                                            format(field.value, "PPP")
+                                            format(field.value, dateFormat)
                                         ) : (
                                             <span>{placeholder}</span>
                                         )}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-white" align="start">
+                                <PopoverContent className="w-auto p-0 bg-popover" align="start">
                                     <Calendar
                                         mode="single"
-                                        selected={field.value}
+                                        selected={field.value}  
                                         onSelect={field.onChange}
                                         initialFocus
+                                        className="rounded-md border shadow-sm"
                                     />
                                 </PopoverContent>
                             </Popover>
                         </FormControl>
-                        <FormMessage className={cn(
-                            "text-red-500", 
-                            layout === 'horizontal' ? "ml-[120px]" : "mt-1 w-full"
-                        )} />
+                        <FormMessage className={messageVariants({ layout })} />
                     </FormItem>
                 )}
             />
@@ -117,6 +80,6 @@ const FormDatePicker = React.forwardRef(
 
 FormDatePicker.displayName = 'FormDatePicker';
 
-export default FormDatePicker as unknown as <T extends object>(
+export default FormDatePicker as unknown as <T extends FieldValues>(
     props: FormDatePickerProps<T> & { ref?: React.Ref<HTMLButtonElement> },
 ) => React.ReactElement;
