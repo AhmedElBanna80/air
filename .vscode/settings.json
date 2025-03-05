@@ -51,6 +51,7 @@
     "openapi"
   ],
   "conventionalCommits.scopes": [
-    "app"
+    "app",
+    "ui"
   ]
 }
