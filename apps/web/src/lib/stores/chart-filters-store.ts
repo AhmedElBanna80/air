@@ -1,5 +1,4 @@
-import { Derived, Effect, Store } from '@tanstack/react-store';
-import { useTimeSeriesData } from '../queries/get-charts-data';
+import { Store } from '@tanstack/react-store';
 
 
 
