@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+import { scan } from "react-scan";
 
 import reportWebVitals from "./reportWebVitals.ts";
 import "./styles.css";
@@ -16,6 +17,10 @@ import { RootComponent } from "./routes/_root.tsx";
 import { ChartsPage } from "./routes/charts.tsx";
 import { IndexPage } from "./routes/index.tsx";
 import { UploadPage } from "./routes/upload.tsx";
+
+if (import.meta.env.DEV) {
+	scan();
+}
 
 const queryClient = new QueryClient();
 

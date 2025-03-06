@@ -5,17 +5,14 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useChartData } from "@/lib/chartState";
+import { useIsFullScreen } from "@/lib/hooks/use-is-fullscreen";
 import { MaximizeIcon } from "lucide-react";
 import ChartFiltersForm from "./chart-filters-form";
 
-interface FormViewSettingsProps {
-	containerElement: HTMLElement | null;
-}
 
-export function FormViewSettings({ containerElement }: FormViewSettingsProps) {
-	// We only need the fullscreen toggle from the original chart data
-	const { toggleFullScreen } = useChartData();
+export function FormViewSettings() {
+	const { toggleFullScreen } =
+		useIsFullScreen();
 
 	return (
 		<div className="mb-4 pb-4 border-b border-border">
@@ -29,7 +26,7 @@ export function FormViewSettings({ containerElement }: FormViewSettingsProps) {
 									type="button"
 									variant="outline"
 									size="icon"
-									onClick={() => toggleFullScreen(containerElement)}
+									onClick={toggleFullScreen}
 									className="flex bg-transparent border-none hover:bg-accent hover:text-accent-foreground"
 								>
 									<MaximizeIcon className="h-4 w-4" />

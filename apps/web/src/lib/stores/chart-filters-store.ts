@@ -1,4 +1,6 @@
-import { Store } from '@tanstack/store';
+import { Derived, Effect, Store } from '@tanstack/react-store';
+import { useTimeSeriesData } from '../queries/get-charts-data';
+
 
 
 // Define the chart filters state type

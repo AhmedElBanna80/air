@@ -1,3 +1,4 @@
+import { useTimeSeriesData } from "@/lib/queries/get-charts-data";
 import { chartFiltersStore } from "@/lib/stores/chart-filters-store";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +32,7 @@ export const ChartFiltersForm: React.FC<ChartFiltersFormProps> = ({
 	className,
 }) => {
 	const store = useStore(chartFiltersStore);
+  const { refetch } = useTimeSeriesData()
 
 	const form = useForm<ChartFilters>({
 		resolver: zodResolver(filterSchema),
@@ -40,6 +42,7 @@ export const ChartFiltersForm: React.FC<ChartFiltersFormProps> = ({
 	// Handle form submission
 	const onSubmit = (values: ChartFilters) => {
 		chartFiltersStore.setState((state) => ({ state, ...values }));
+    refetch()
 	};
 
 	return (

@@ -1,28 +1,9 @@
-import { useEffect } from "react";
+import { useTimeSeriesData } from "@/lib/queries/get-charts-data";
 import AirQualityChart from "../components/charts/air-quality-chart";
 import { Card, CardContent } from "../components/ui/card";
-import { useChartData } from "../lib/chartState";
 
 export function ChartsPage() {
-	// Get all chart data and state from context
-	const {
-		data,
-		isLoading,
-		isError,
-		dateRange,
-		groupBy,
-		customRange,
-		dateRangeSummary,
-		handleRefresh,
-		handleCustomDateChange,
-		handleGroupByChange,
-	} = useChartData();
-
-	// Trigger initial data fetch on first render
-	useEffect(() => {
-		handleRefresh();
-	}, [handleRefresh]);
-
+	const { isLoading, isError, data} = useTimeSeriesData();
 	return (
 		<div className="w-full h-full flex">
 			<Card className="w-full h-full flex flex-col flex-1 border-0 rounded-none shadow-none card">
@@ -45,17 +26,7 @@ export function ChartsPage() {
 						</div>
 					) : (
 						<div className="h-full w-full p-4">
-							<AirQualityChart
-								data={data}
-								from={dateRange.from}
-								to={dateRange.to}
-								groupBy={groupBy}
-								onRefresh={handleRefresh}
-								onDateChange={handleCustomDateChange}
-								onGroupByChange={handleGroupByChange}
-								customRange={customRange}
-								dateRangeSummary={dateRangeSummary}
-							/>
+							<AirQualityChart />
 						</div>
 					)}
 				</CardContent>

@@ -1,13 +1,8 @@
 import { FormViewSettings } from "./form-view-settings";
 
-interface ChartControlsProps {
-	containerElement: HTMLElement | null;
-}
 
-export function ChartControls({
-	containerElement,
-}: ChartControlsProps) {
+export function ChartControls() {
 	return (
-		<FormViewSettings containerElement={containerElement} />
+		<FormViewSettings />
 	);
 }
